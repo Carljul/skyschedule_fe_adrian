@@ -1,0 +1,71 @@
+:root {
+    --fc-border-color: rgba(75, 85, 99, 0.2);
+    --fc-days-color: rgba(75, 85, 99, 0.8);
+}
+
+.fc .fc-button.fc-button-primary {
+    background-color: var(--pref-color-primary);
+    text-transform: capitalize;
+    border-color: transparent!important;
+    font-size: 0.875rem;
+    &:hover {
+        background-color: var(--pref-color-primary-hover);
+    }
+
+    &:focus,
+    &:focus-visible {
+        box-shadow: unset!important;
+    }
+}
+
+.fc .fc-button.fc-button-primary.fc-button-active {
+    background-color: var(--pref-color-secondary);
+    &:hover {
+        background-color: var(--pref-color-secondary-hover);
+    }
+}
+
+
+.fc .fc-col-header-cell {
+    color: var(--pref-color-dark);
+}
+
+.fc .fc-day.fc-col-header-cell {
+    padding: 5px;
+}
+
+.fc .fc-day:not(.fc-col-header-cell) {
+    color: var(--fc-days-color);
+    font-weight: bold;
+    font-size: 20px;
+    padding: 10px;
+}
+
+.fc .fc-toolbar-title {
+    font-weight: bold;
+    color: var(--pref-color-dark);
+}
+
+.cal-entry {
+    font-size: 14px!important;
+    white-space: normal!important;
+    font-size: 13px;
+    line-height: 1.3rem;
+    position: relative;
+    z-index: auto!important;
+
+    .data-employee-popover-editor {
+        background: rgba(225, 225, 225, 0.4);
+        color: #ffffff;
+    }
+}
+
+.fc-more-link {
+    font-size: 14px!important;
+    font-weight: normal;
+}
+
+.fc-daygrid-event-harness,
+.fc-event .fc-event-main {
+    z-index: auto!important;
+}

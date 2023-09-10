@@ -1,0 +1,15 @@
+:root {
+    --vs-border-color: transparent;
+    --vs-font-size: var(--pref-text-sm);
+    --vs-selected-color: var(--pref-color-dark);
+}
+
+.vs--multiple .vs__selected {
+    padding: 0 .5em;
+    background-color: var(--pref-color-primary);
+    color: var(--pref-color-light);
+}
+
+.tt-component-select .vs__dropdown-menu {
+    margin-top: 2px;
+}
