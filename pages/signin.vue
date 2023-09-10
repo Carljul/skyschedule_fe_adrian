@@ -57,6 +57,9 @@
 import { ValidationProvider, ValidationObserver } from "vee-validate";
 import VMsg from "@components/reusables/VeeMessage.vue";
 import AsyncButton from "@components/reusables/AsyncButton.vue";
+
+import { mapActions, mapState } from "vuex";
+
 export default {
   layout: 'auth',
   auth: 'guest',
@@ -80,13 +83,26 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapState({
+      authToken: state => state.auth.signin.authToken,
+      status: state => state.auth.signin.status,
+      loggedInUser: state => state.auth.signin.loggedInUser,
+    })
+  },
   methods: {
+    ...mapActions('auth/signin', [
+        'login',
+    ]),
     async signin() {
-      try {
-        this.$refs.signinbtn.loading = true;
-        await this.$auth.loginWith('local', { data: this.inputs });
+      this.$refs.signinbtn.loading = true;
+      await this.login(this.inputs)
+      console.log(['this.status', this.status])
+      console.log(['this.loggedInUser', this.loggedInUser])
+      console.log(['this.authToken', this.authToken])
+      if (this.status) {
         window.location.href="/order";
-      } catch(err) {
+      } else {
         this.inputs.password = '';
         const e = this;
         this.$nextTick(() => {
