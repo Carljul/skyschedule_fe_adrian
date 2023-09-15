@@ -10,7 +10,6 @@
             <div class="bar-container">
                 <BarChart
                     title="Orders"
-                    ref="child"
                     :options="chartOptions"
                     :data="barChartData"
                     :isWithFilter="false"
@@ -267,9 +266,10 @@ export default {
                 scales: {
                     x: {
                         display: false,
-                        suggestedMax: 100,
                         stacked: true,
-                        inflateAmount: 100,
+                        ticks: {
+                            beginAtZero: true,
+                        },
                     },
                     y: {
                         stacked: true,
@@ -279,15 +279,6 @@ export default {
                     legend: {
                         display: true,
                         position: 'right',
-                    },
-                    datalabels: {
-                        color: 'white',
-                        anchor: 'end',
-                        align: 'top',
-                        font: {
-                            weight: 'bold',
-                            size: 16,
-                        },
                     },
                 },
             },
@@ -369,7 +360,6 @@ export default {
             });
             await this.filterTotalStatuses()
             this.barChartData = this.prepareGraphData(this.totals)
-            console.log(['barChartData', this.barChartData])
         },
         getWeekDates(date) {
             const fixedDate = new Date(date)
@@ -436,8 +426,6 @@ export default {
                 <h6>Weekly Totals</h6>
                 <p>` +(total + '/'+ weeklyTotals.complete)+ `</p>
             </div>`;
-            // console.log(['this.weeklyTotalsFraction', this.weeklyTotalsFraction])
-            // console.log(['weeklyTotals', weeklyTotals])
 
             /// ================ Graph
             // Legends
@@ -458,32 +446,85 @@ export default {
                 return formattedDate
             });
 
+            var complete = [];
+            var held = [];
+            var loading_dock = [];
+            var outputting = [];
+            var packaging = [];
+            var printing = [];
+            var proofing = [];
+            var screening = [];
+            var shipping = [];
+            var woa = [];
+            var complete = [];
+
+            
             statusTotals.forEach(obj=> {
-                
-                // var obj = statusTotals[x];
-                // var label = this.capitalizeFirstLetter(key.replace(/_/g, ' '))
+                complete.push(obj.complete);
+                held.push(obj.held);
+                loading_dock.push(obj.loading_dock);
+                outputting.push(obj.outputting);
+                packaging.push(obj.packaging);
+                printing.push(obj.printing);
+                proofing.push(obj.proofing);
+                screening.push(obj.screening);
+                shipping.push(obj.shipping);
+                woa.push(obj.woa);
+            });
 
-                // datasets.push({
-                //     label: 
-                // })
-            }) 
+            labels.forEach(item => {
+                var arrayToPush = [];
+                switch(item) {
+                    case 'Complete':
+                        arrayToPush = complete;
+                        break;
+                    case 'Held':
+                        arrayToPush = held;
+                        break;
+                    case 'Loading dock':
+                        arrayToPush = loading_dock;
+                        break;
+                    case 'Outputting':
+                        arrayToPush = outputting;
+                        break;
+                    case 'Packaging':
+                        arrayToPush = packaging;
+                        break;
+                    case 'Printing':
+                        arrayToPush = printing;
+                        break;
+                    case 'Proofing':
+                        arrayToPush = proofing;
+                        break;
+                    case 'Screening':
+                        arrayToPush = screening;
+                        break;
+                    case 'Shipping':
+                        arrayToPush = shipping;
+                        break;
+                    case 'Woa':
+                        arrayToPush = woa;
+                        break;
+                }
 
-            // shipDateIds.forEach(dates => {
-            //     console.log(dates);
-            //     labels.forEach(label => {                
-            //         datasets.push({
-            //             label: label,
-            //             data: statusTotals,
-            //             barThickness: 'flex',
-            //             backgroundColor: this.getRandomHexColor(),
-            //             parsing: {
-            //                 xAxisKey: dates
-            //             }
-            //         })
-            //     });
-            // })
-
-            console.log(datasets)
+                datasets.push({
+                    label: item,
+                    data: arrayToPush,
+                    hidden: item != 'Complete' ? true : false,
+                    backgroundColor: this.getRandomHexColor(),
+                    datalabels: {
+                        color: 'white',
+                        align: 'center',
+                        font: {
+                            weight: 'bold',
+                            size: 16,
+                        },
+                        formatter: function(value, context) {                         
+                            return value == 0 ? '' : (value + ' / ' + value);
+                        }
+                    },
+                })
+            });
 
             return {
                 labels: shipDateIds,
