@@ -44,8 +44,8 @@ export const mutations = {
         state.state = {...state.state, inputs: defaultState.state.inputs};
     },
     updateEntryDataResponse(state, payload) {
-        const itemIndex = state.state.entry.data.findIndex(x => x.uid === payload.uid);
-        Vue.set(state.state.entry.data, itemIndex, payload);
+        const itemIndex = state.state.entry.data.findIndex(x => x && x.order_id == payload[0].order_id);
+        Vue.set(state.state.entry.data, itemIndex, payload[0]);
     }
 }
 
@@ -63,7 +63,7 @@ export const actions = {
                 } 
             });
 
-            const res = await this.$axios.get(`/orders`, {
+            const res = await this.$axios.get('/orders', {
                 params: state.state.entry.filter
             });
             console.log('DATA',res.data.data)
@@ -75,6 +75,8 @@ export const actions = {
                     loading: false 
                 } 
             });
+
+            console.log(state.state);
             
 
         } catch($e) {
@@ -93,12 +95,17 @@ export const actions = {
         const app = this._vm;
         if(!payload) { return; }
         try {
-            const res = await this.$axios.get(`${app.getOrgUID}/orders/${payload}`);
-            commit('setState', { handle: 'state', key: 'inputs', value: res.data.response });
-            app.$nextTick(() => {
-                app.findPageComponent('MainOrderForm').$refs.adjustmentmodal.open=true;
-            });
-            return res.data.response;
+            const res = await this.$axios.get(`orders/${payload}`);
+            var data = res.data.response;
+            if (data.length > 0) {
+                commit('setState', { handle: 'state', key: 'inputs', value: data[0]});
+                app.$nextTick(() => {
+                    app.findPageComponent('MainOrderForm').$refs.adjustmentmodal.open=true;
+                });
+                return res.data.response;
+            }
+
+            return false;
         } catch($e) {
             return false;
         }
@@ -107,14 +114,16 @@ export const actions = {
     async saveEntry({ state, commit, dispatch }) {
         const app = this._vm;
         try {
+            
+        console.log(['state.state.entry.data', state.state.entry.data])
             let res = null
-            if(state.state.inputs.uid) {
-                res = await this.$axios.put(`/${app.getOrgUID}/orders/${state.state.inputs.uid}`, state.state.inputs);
+            if(state.state.inputs.order_id) {
+                res = await this.$axios.put(`/orders/${state.state.inputs.order_id}`, state.state.inputs);
                 commit('updateEntryDataResponse', res.data.response);
-                app.notify({ title: 'Saved!', html: 'Overtime has been saved.' });
+                app.notify({ title: 'Saved!', html: 'Status has been saved.' });
             } else {
                 res = await this.$axios.post(`/${app.getOrgUID}/orders`, state.state.inputs);
-                app.notify({ title: 'Saved!', html: 'Overtime has been added.' });
+                app.notify({ title: 'Saved!', html: 'Status has been added.' });
                 dispatch('fetchEntry');
             }
         } catch($e) {

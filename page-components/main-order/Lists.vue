@@ -90,7 +90,7 @@
                             </td>
 
                             <td class="px-6 py-4 text-sm font-medium text-right  flex items-center justify-end">
-                                <nuxt-link v-if="entry.editable" :to="`/order?uid=${entry.uid}`" 
+                                <nuxt-link :to="`/order?uid=${entry.order_id}`" 
                                 class="ml-2 mt-2 --text-primary --text-primary-hover" :title="appdefaults.edit" v-tooltip="appdefaults.edit">
                                     <icon-edit />
                                 </nuxt-link>
@@ -161,6 +161,11 @@ export default {
         PageSearch,
         AlertConfirm,
         Print
+    },
+    data() {
+        return {
+            entries: [],
+        }
     },
     computed: {
         ...mapState({
