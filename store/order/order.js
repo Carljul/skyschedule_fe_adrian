@@ -22,7 +22,8 @@ const getDefaultState = () => {
                     with_trashed: null,
                     only_trashed: null,
                 }
-            }
+            },
+            print: null
         }
     }
 };
@@ -46,6 +47,9 @@ export const mutations = {
     updateEntryDataResponse(state, payload) {
         const itemIndex = state.state.entry.data.findIndex(x => x && x.order_id == payload[0].order_id);
         Vue.set(state.state.entry.data, itemIndex, payload[0]);
+    },
+    setToPrint(state, data) {
+        state.print = data
     }
 }
 
