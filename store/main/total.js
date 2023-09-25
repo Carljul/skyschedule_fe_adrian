@@ -21,8 +21,7 @@ export const state = () => ({
                 with_trashed: null,
                 only_trashed: null,
             }
-        },
-        print: null
+        }
     },
     daily: {
         inputs: {
@@ -67,7 +66,8 @@ export const state = () => ({
             startDate: null,
             endDate: null
         }
-    }
+    },
+    print: null
 });
 
 // mutations
@@ -235,6 +235,7 @@ export const actions = {
               },
               responseType: 'blob', // Set the responseType to 'blob'
               params: {
+                ...state.state.entry.filter,
                 print: true,
                 date: payload.date,
                 filter: payload.type

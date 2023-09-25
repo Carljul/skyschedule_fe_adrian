@@ -6,7 +6,7 @@
                 <p>Preparing Data</p>
             </div>
         </div>
-        <iframe :src="print" class="printFrame"></iframe>
+        <iframe :src="printLink" class="printFrame"></iframe>
     </div>
 </template>
 <script>
@@ -16,6 +16,11 @@ import { mapState, mapMutations, mapActions } from "vuex"
 
 export default {
     name: 'MainOrderLists',
+    data() {
+        return {
+            printLink: ''
+        };
+    },
     components: {
         Loader,
     },
@@ -34,8 +39,16 @@ export default {
             'fetchToPrint'
         ]),
     },
+    watch: {
+        print: function(newdata, olddata) {
+            console.log(['newdata', newdata])
+            this.printLink = newdata;
+        }
+    },
     async created() {
         await this.fetchToPrint();
+        this.printLink = this.print
+        console.log(this.print)
     }
 }
 </script>

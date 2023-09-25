@@ -2,6 +2,7 @@ import defaults from "~/defaults.js";
 import Vue from "vue";
 import __get from "lodash.get";
 
+
 /** VUEX */
 
 const getDefaultState = () => {
@@ -22,9 +23,9 @@ const getDefaultState = () => {
                     with_trashed: null,
                     only_trashed: null,
                 }
-            },
-            print: null
-        }
+            }
+        },
+        print: null
     }
 };
 
@@ -153,25 +154,26 @@ export const actions = {
                     loading: true 
                 } 
             });
-            
-            let filename = new Date().getTime();
+
             const res = await this.$axios.get(`/orders/print/report`, {
               headers: {
                 'Accept': 'application/pdf',
               },
               responseType: 'blob', // Set the responseType to 'blob'
               params: {
+                ...state.state.entry.filter,
                 print: true
-              },
+             },
             });
-          
+            console.log(['res', res])
+            let filename = new Date().getTime();
             const blob = new Blob([res.data], { type: 'application/pdf' });
-            console.log(res)
+            console.log(['blob', window.URL.createObjectURL(blob)])
           
             // Create a temporary anchor element to trigger the download
             const link = document.createElement('a');
             link.href = window.URL.createObjectURL(blob);
-            link.download = filename + '.pdf'; // You can specify the desired filename
+            link.download = 'test.pdf'; // You can specify the desired filename
           
 
             // Do not delete this: This will download as pdf file
@@ -181,13 +183,13 @@ export const actions = {
             // Release the object URL to free up resources
             // window.URL.revokeObjectURL(link.href);
             
+            commit('setToPrint', window.URL.createObjectURL(blob));
             commit('setState', { 
                 entry: { 
                     ...state.state.entry, 
                     loading: false 
                 } 
             });
-            commit('setToPrint', link.href);
         } catch ($e) {
             commit('setState', { 
                 entry: { 
@@ -195,7 +197,6 @@ export const actions = {
                     loading: false 
                 } 
             });
-            throw $e;
         }
     }
 };
