@@ -139,5 +139,59 @@ export const actions = {
         } catch($e) {
             app.errorHandle($e);
         }
+    },
+
+    async fetchToPrint({state, commit}, payload) {
+        try {
+            commit('setState', { 
+                entry: { 
+                    ...state.state.entry, 
+                    loading: true 
+                } 
+            });
+            
+            let filename = new Date().getTime();
+            const res = await this.$axios.get(`/orders/print/report`, {
+              headers: {
+                'Accept': 'application/pdf',
+              },
+              responseType: 'blob', // Set the responseType to 'blob'
+              params: {
+                print: true
+              },
+            });
+          
+            const blob = new Blob([res.data], { type: 'application/pdf' });
+            console.log(res)
+          
+            // Create a temporary anchor element to trigger the download
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = filename + '.pdf'; // You can specify the desired filename
+          
+
+            // Do not delete this: This will download as pdf file
+            // Trigger a click event on the anchor element
+            // link.click();
+          
+            // Release the object URL to free up resources
+            // window.URL.revokeObjectURL(link.href);
+            
+            commit('setState', { 
+                entry: { 
+                    ...state.state.entry, 
+                    loading: false 
+                } 
+            });
+            commit('setToPrint', link.href);
+        } catch ($e) {
+            commit('setState', { 
+                entry: { 
+                    ...state.state.entry, 
+                    loading: false 
+                } 
+            });
+            throw $e;
+        }
     }
 };

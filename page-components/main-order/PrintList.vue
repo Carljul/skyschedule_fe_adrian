@@ -31,8 +31,6 @@ export default {
             'setToPrint'
         ]),
         ...mapActions('order/order', [
-            'fetchEntry',
-            'removeEntry',
             'fetchToPrint'
         ]),
     },

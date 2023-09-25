@@ -9,7 +9,7 @@
                 <div class="mb-2 float-right">
                     <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md">Reset Column Settings</button>
                     <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md">Reset Column Order</button>
-                    <Print />
+                    <Print/>
                 </div>
                 <table class="w-100 table-auto">
                     <thead>

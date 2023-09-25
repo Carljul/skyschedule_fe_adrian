@@ -47,20 +47,20 @@
                     </td>                    
 
                     <td class="px-6 py-4 text-sm font-medium text-right  flex items-center justify-end">
-                        <nuxt-link v-if="entry.editable" :to="`/user?uid=${entry.uid}`" 
+                        <nuxt-link  :to="`/user?id=${entry.id}`" 
                         class="ml-2 mt-2 --text-primary --text-primary-hover" :title="appdefaults.edit" v-tooltip="appdefaults.edit">
                             <icon-edit />
                         </nuxt-link>
 
                         <a 
-                        v-if="entry.editable"
+                        
                         href="#" @click.prevent="() => {
                             $refs.alertconfirm.$alert({
                                 title: appdefaults.trashConfirm.title,
                                 html: appdefaults.trashConfirm.html,
                                 execute: async function() {
                                     await removeEntry(entry);
-                                    notify({ title: 'Success!', html: `Order ${appdefaults.trashConfirm.success}` });
+                                    notify({ title: 'Success!', html: `User ${appdefaults.trashConfirm.success}` });
                                 }
                             });
                         }" class="ml-2 mt-2 --text-primary --text-primary-hover mr-10" :title="appdefaults.trash" v-tooltip="appdefaults.trash">

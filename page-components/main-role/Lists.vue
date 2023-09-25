@@ -37,7 +37,7 @@
                     <template v-if="!entry.deleted_at">
 
 
-                        <nuxt-link :to="`/employees/positions?uid=${entry.uid}`" 
+                        <nuxt-link  :to="`/role?id=${entry.id}`" 
                         class="ml-2 mt-2 --text-primary --text-primary-hover" :title="appdefaults.edit" v-tooltip="appdefaults.edit">
                             <icon-edit />
                         </nuxt-link>
@@ -48,7 +48,7 @@
                                 html: appdefaults.trashConfirm.html,
                                 execute: async function() {
                                     await removeEntry(entry);
-                                    notify({ title: 'Success!', html: `Position ${appdefaults.trashConfirm.success}` });
+                                    notify({ title: 'Success!', html: `Role ${appdefaults.trashConfirm.success}` });
                                 }
                             });
                         }" class="ml-2 mt-2 --text-primary --text-primary-hover mr-10" :title="appdefaults.trash" v-tooltip="appdefaults.trash">
@@ -65,7 +65,7 @@
                                 yesclass: '--bg-success --bg-success-hover',
                                 execute: async function() {
                                     await restoreEntry(entry);
-                                    notify({ title: 'Success!', html: `Position ${appdefaults.restoreConfirm.success}` });
+                                    notify({ title: 'Success!', html: `Role ${appdefaults.restoreConfirm.success}` });
                                 }
                             });
                         }"
@@ -79,7 +79,7 @@
                                 html: appdefaults.removeConfirm.html,
                                 execute: async function() {
                                     await removeEntry(entry);
-                                    notify({ title: 'Success!', html: `Position ${appdefaults.removeConfirm.success}` });
+                                    notify({ title: 'Success!', html: `Role ${appdefaults.removeConfirm.success}` });
                                 }
                             });
                         }" class="ml-2 mt-2 --text-primary --text-danger mr-10" :title="appdefaults.remove" v-tooltip="appdefaults.remove">

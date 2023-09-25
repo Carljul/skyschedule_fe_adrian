@@ -10,10 +10,11 @@
         </div>
 
         <page-search />
-
+        <page-form />
+        <edit-form />
         <page-lists />
 
-        <page-form />
+        
 
     </div>
 </template>
@@ -23,7 +24,7 @@ import PageFilter from "@page_components/main-ability/Filter.vue";
 import PageSearch from "@page_components/main-ability/Search.vue";
 import PageLists from "@page_components/main-ability/Lists.vue";
 import PageForm from "@page_components/main-ability/Form.vue";
-
+import EditForm from "@page_components/main-ability/Edit.vue";
 import { mapActions } from "vuex";
 
 export default {
@@ -36,7 +37,8 @@ export default {
         PageLists,
         Breadcrumbs,
         PageSearch,
-        PageForm
+        PageForm,
+        EditForm
     },
     head() {
         return {
@@ -46,33 +48,28 @@ export default {
     methods: {
         ...mapActions('main/ability', [
             'fetchEntry',
-            'fetchByUID'
-        ]),
-        ...mapActions('global', [
-            'assignPage',
+            'fetchByID'
         ]),
     },
     watch: {
         $route: async function(to, from) {
-            if(to.query.uid) {
+            if(to.query.id) {
                 this.nuxtload();
-                await this.fetchByUID(to.query.uid);
+                await this.fetchByID(to.query.id)
                 this.nuxtunload();
-            } else {
-                this.findPageComponent('MainAbilityForm').$refs.adjustmentmodal.open=false;
+            } else {                
+                this.findPageComponent('AbilityIndexEdit').$refs.modal_editentry.open=false;
+
             }
         }
-    },
-    async created() {
-        await this.assignPage('Abilities')
     },
     async mounted() {
         
         this.fetchEntry();
 
-        if(this.$route.query.uid) {
+        if(this.$route.query.id) {
             this.nuxtload();
-            await this.fetchByUID(this.$route.query.uid);
+            await this.fetchByID(this.$route.query.id);
             this.nuxtunload();
         }
     }

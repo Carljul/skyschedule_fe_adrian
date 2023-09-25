@@ -8,13 +8,9 @@
     </nuxt-link>
 </template>
 <script>
-import TSelectStatus from "@components/reusables/SelectEntryStatus.vue";
 import { mapState, mapMutations, mapActions } from "vuex";
 export default {
-    name: 'EmployeesDepartmentSearch',
-    components: {
-        TSelectStatus
-    },
+    name: 'MainOrderPrintButton',
     computed: {
         ...mapState({
             state: state => state.order.order.state

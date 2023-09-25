@@ -36,14 +36,14 @@ export default {
     },
     computed: {
         ...mapState({
-            state: state => state.employees.departments.state
+            state: state => state.main.role.state
         }),
     },
     methods: {
-        ...mapMutations('employees/departments', [
+        ...mapMutations('main/role', [
             'setState'
         ]),
-        ...mapActions('employees/departments', [
+        ...mapActions('main/role', [
             'fetchEntry'
         ])
     }
