@@ -228,6 +228,8 @@ export const actions = {
                     loading: true 
                 } 
             });
+            
+            let entry = localStorage.getItem('total-entry');
 
             const res = await this.$axios.get(`/totals/print/report`, {
               headers: {
@@ -235,10 +237,8 @@ export const actions = {
               },
               responseType: 'blob', // Set the responseType to 'blob'
               params: {
-                ...state.state.entry.filter,
+                ...(JSON.parse(entry)).filter,
                 print: true,
-                date: payload.date,
-                filter: payload.type
               },
             });
           
@@ -264,7 +264,6 @@ export const actions = {
                     loading: false 
                 } 
             });
-            console.log(['link.href', link.href])
             commit('setToPrint', link.href);
         } catch ($e) {
             commit('setState', { 

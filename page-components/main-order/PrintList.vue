@@ -6,7 +6,7 @@
                 <p>Preparing Data</p>
             </div>
         </div>
-        <iframe :src="printLink" class="printFrame"></iframe>
+        <iframe v-if="!state.entry.loading && printLink != null" :src="printLink" class="printFrame"></iframe>
     </div>
 </template>
 <script>
@@ -38,6 +38,9 @@ export default {
         ...mapActions('order/order', [
             'fetchToPrint'
         ]),
+        alert(message) {
+            alert(message);
+        }
     },
     watch: {
         print: function(newdata, olddata) {
@@ -48,8 +51,11 @@ export default {
     async created() {
         await this.fetchToPrint();
         this.printLink = this.print
-        console.log(this.print)
-    }
+        if (this.print == null) {
+            this.alert('File is too large');
+            window.close();
+        }
+    },
 }
 </script>
 <style scoped>

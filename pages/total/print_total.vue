@@ -13,5 +13,10 @@ export default {
   components: {
       PageLists,
   },
+  head() {
+      return {
+          title: 'Total' + this.theAppTitle
+      }
+  },
 }
 </script>

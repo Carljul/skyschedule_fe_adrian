@@ -18,7 +18,7 @@ import PageFilter from "@page_components/main-total/Filter.vue";
 import PageLists from "@page_components/main-total/Lists.vue";
 import PageForm from "@page_components/main-total/Form.vue";
 
-import { mapActions } from "vuex";
+import { mapActions, mapMutations, mapState } from "vuex";
 
 export default {
     name: "MainTotalPage",
@@ -37,6 +37,11 @@ export default {
             page: 'Totals'
         }
     },
+    computed: {
+        ...mapState({
+            state: state => state.main.total.state,
+        })
+    },
     methods: {
         ...mapActions('main/total', [
             'fetchTotals',
@@ -45,6 +50,9 @@ export default {
         ]),
         ...mapActions('global', [
             'assignPage',
+        ]),
+        ...mapMutations('main/total', [
+            'setState',
         ]),
         reformatSingleDigits(n) {
             return n > 9 ? "" + n: "0" + n;
@@ -62,6 +70,7 @@ export default {
         }
     },
     async created() {
+        localStorage.removeItem('total-entry');
         await this.assignPage('Totals by Date and Week')
     },
     async mounted() {
@@ -75,15 +84,19 @@ export default {
             isDaily: true,
             selectedDate: formattedDate
         }
+        
+        // For left table
+        this.filterSpecificDate(leftTablePayload);
+        // For right table
+        this.filterSpecificDate(rightTablePayload);
+
+        this.setState({ entry: { ...this.state.entry, filter: { ...this.state.entry.filter, date: formattedDate, filter: 'daily' } } });
+        localStorage.setItem('total-entry', JSON.stringify(this.state.entry))
+
         // For Graph
         await this.fetchTotals();
 
         this.$refs.listAndGraph.generateGraph();
-        
-        // For left table
-        await this.filterSpecificDate(leftTablePayload);
-        // For right table
-        await this.filterSpecificDate(rightTablePayload);
 
         if(this.$route.query.uid) {
             this.nuxtload();

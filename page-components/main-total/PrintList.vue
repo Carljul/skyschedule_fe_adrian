@@ -6,7 +6,7 @@
               <p>Preparing Data</p>
           </div>
       </div>
-      <iframe v-if="!state.entry.loading" :src="print" class="printFrame"></iframe>
+      <iframe v-if="!state.entry.loading && printLink != null" :src="printLink" class="printFrame"></iframe>
   </div>
 </template>
 <script>
@@ -17,38 +17,43 @@ import { mapState, mapMutations, mapActions } from "vuex"
 export default {
   name: 'MainTotalLists',
   components: {
-      Loader,
+    Loader,
+  },
+  data() {
+    return {
+      printLink: ''
+    };
   },
   computed: {
-      ...mapState({
-          state: state => state.main.total.state,
-          print: state => state.main.total.print,
-      }),
+    ...mapState({
+      state: state => state.main.total.state,
+      print: state => state.main.total.print,
+    }),
+  },
+  watch: {
+    print: function(newdata, olddata) {
+      this.printLink = newdata;
+    }
   },
   methods: {
-      ...mapMutations('main/total', [
-          'setState',
-          'setToPrint'
-      ]),
-      ...mapActions('main/total', [
-          'fetchToPrint'
-      ]),
-      getQueryParams(url) {
-        const queryParams = {};
-        const paramPairs = url.slice(url.indexOf('?') + 1).split('&');
-
-        for (const pair of paramPairs) {
-          const [key, value] = pair.split('=');
-          queryParams[key] = decodeURIComponent(value);
-        }
-
-        return queryParams;
-      }
+    ...mapMutations('main/total', [
+        'setState',
+        'setToPrint'
+    ]),
+    ...mapActions('main/total', [
+        'fetchToPrint'
+    ]),
+    alert(message) {
+      alert(message)
+    }
   },
   async created() {
-    await this.fetchToPrint(this.getQueryParams(window.location.href));
-    console.log(this.state)
-    console.log(this.print)
+    await this.fetchToPrint();
+    this.printLink = this.print
+    // if (this.print == null) {
+    //     this.alert('File is too large');
+    //     // window.close();
+    // }
   },
 }
 </script>

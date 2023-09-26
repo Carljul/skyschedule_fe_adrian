@@ -28,10 +28,7 @@
                     <div class="mb-2 float-right">
                         <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md">Reset Column Settings</button>
                         <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md">Reset Column Order</button>
-                        <print-button
-                            type="daily"
-                            :date="dateData"
-                        />
+                        <Print />
                     </div>
     
                     <table class="w-100 table-auto">
@@ -134,12 +131,9 @@
               </div>
               <div class="content">
                   <div class="mb-2 float-right">
-                      <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md">Reset Column Settings</button>
-                      <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md">Reset Column Order</button>
-                        <print-button
-                            type="weekly"
-                            :date="dateData"
-                        />
+                        <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md">Reset Column Settings</button>
+                        <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md">Reset Column Order</button>
+                        <Print/>
                   </div>
                   
                   <table class="w-100 table-auto">
@@ -248,7 +242,7 @@ import AlertConfirm from "@components/reusables/AlertConfirm.vue";
 import BarChart from "../charts/BarChart.vue"
 import { mapState, mapMutations, mapActions } from "vuex"
 import DatePicker from "@components/reusables/DatePicker.vue";
-import PrintButton from "@page_components/main-total/Print.vue";
+import Print from "@page_components/main-total/Print.vue";
 
 export default {
     name: 'MainOrderLists',
@@ -260,7 +254,7 @@ export default {
         AlertConfirm,
         BarChart,
         DatePicker,
-        PrintButton
+        Print
     },
     data() {
         return {
@@ -291,7 +285,7 @@ export default {
             dateData: new Date(),
             barChartData: {},
             defaultActiveBarChart: ['Complete', 'Printing'],
-            excludedFields: ['ship_date_id']
+            excludedFields: ['ship_date_id'],
         };
     },
     computed: {
@@ -301,9 +295,6 @@ export default {
             weekly: state => state.main.total.weekly,
             totals: state => state.main.total.totals,
         }),
-    },
-    created() {
-        this.generateGraph()
     },
     watch: {
         dateData: function(newdata, olddata) {
@@ -317,6 +308,8 @@ export default {
                 isDaily: false,
                 selectedDate: formattedDate
             }
+            this.setState({ entry: { ...this.state.entry, filter: { ...this.state.entry.filter, date: formattedDate, filter: 'daily' } } });
+            localStorage.setItem('total-entry', JSON.stringify(this.state.entry))
             this.filterSpecificDate(leftTablePayload)
             this.filterSpecificDate(rightTablePayload)
             this.generateGraph()
@@ -341,7 +334,9 @@ export default {
                 isDaily: true,
                 selectedDate: formattedDate
             }
-            this.setDaily({ entry: { ...this.daily.entry, filter: { ...this.daily.entry.filter, page: data.page, limit: data.limit } } });
+            this.setDaily({ entry: { ...this.daily.entry, filter: { ...this.daily.entry.filter, page: data.page, limit: data.limit, date: formattedDate, filter: 'daily' } } });
+            this.setState({ entry: { ...this.state.entry, filter: { ...this.state.entry.filter, page: data.page, limit: data.limit, date: formattedDate, filter: 'daily' } } });
+            localStorage.setItem('total-entry', JSON.stringify(this.state.entry))
             await this.filterSpecificDate(tablePayload);
         },
         async paginateWeekly(data) {
@@ -351,7 +346,9 @@ export default {
                 isDaily: false,
                 selectedDate: formattedDate
             }
-            this.setWeekly({ entry: { ...this.weekly.entry, filter: { ...this.weekly.entry.filter, page: data.page, limit: data.limit } } });
+            this.setWeekly({ entry: { ...this.weekly.entry, filter: { ...this.weekly.entry.filter, page: data.page, limit: data.limit, date: formattedDate, filter: 'weekly' } } });
+            this.setState({ entry: { ...this.state.entry, filter: { ...this.state.entry.filter, page: data.page, limit: data.limit, date: formattedDate, filter: 'weekly' } } });
+            localStorage.setItem('total-entry', JSON.stringify(this.state.entry))
             await this.filterSpecificDate(tablePayload);
         },
         reformatSingleDigits(n) {
@@ -474,9 +471,6 @@ export default {
                 }
             }
             return result;
-        },
-        calculateAdjustments() {
-
         },
         calculatePercentages(statusTotals) {
             var complete = [];
@@ -756,8 +750,6 @@ export default {
                 .map(item => item.label);
             
             this.defaultActiveBarChart = activeObjects;
-
-            console.log(this.$refs.barChartComponent)
         },
     }
 }

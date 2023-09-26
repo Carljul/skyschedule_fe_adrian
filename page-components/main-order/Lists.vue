@@ -172,6 +172,9 @@ export default {
             state: state => state.order.order.state
         }),
     },
+    mounted() {
+        localStorage.setItem('order-entry', JSON.stringify(this.state.entry))
+    },
     methods: {
         ...mapMutations('order/order', [
             'setState'
@@ -183,6 +186,7 @@ export default {
         paginate(data) {
             this.setState({ entry: { ...this.state.entry, filter: { ...this.state.entry.filter, page: data.page } } });
             this.setState({ entry: { ...this.state.entry, filter: { ...this.state.entry.filter, limit: data.limit } } });
+            localStorage.setItem('order-entry', JSON.stringify(this.state.entry))
             this.fetchEntry();
         }
     }

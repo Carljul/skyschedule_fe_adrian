@@ -8,21 +8,7 @@
     </nuxt-link>
 </template>
 <script>
-import { mapState, mapMutations, mapActions } from "vuex";
 export default {
-    name: 'MainOrderPrintButton',
-    computed: {
-        ...mapState({
-            state: state => state.order.order.state
-        }),
-    },
-    methods: {
-        ...mapMutations('order/order', [
-            'setState'
-        ]),
-        ...mapActions('order/order', [
-            'fetchEntry'
-        ])
-    }
+    name: 'MainOrderPrintButton'
 }
 </script>
