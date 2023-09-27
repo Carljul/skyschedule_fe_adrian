@@ -20,10 +20,6 @@
                     </th>
 
                     <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-slate-50 uppercase">
-                        Ability
-                    </th>
-
-                    <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-slate-50 uppercase">
                     </th>
                 </tr>
             </thead>
@@ -47,10 +43,6 @@
                     <td class="px-6 py-4 ">
                         <span class="--text-dark text-xs block max-w-xs">{{ entry.role != null ? entry.role.name : ''
                         }}</span>
-                    </td>
-
-                    <td class="px-6 py-4 ">
-                        <span class="--text-dark text-xs block max-w-xs"></span>
                     </td>
 
                     <td class="px-6 py-4 text-sm font-medium text-right  flex items-center justify-end">

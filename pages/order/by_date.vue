@@ -9,7 +9,7 @@
             />
         </div>
 
-        <page-filter />
+        <!-- <page-filter /> -->
 
         <page-lists />
 
@@ -42,7 +42,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions('order/order_by_date', [
+        ...mapActions('order/order', [
             'fetchEntry',
             'fetchByUID'
         ]),
@@ -67,9 +67,9 @@ export default {
     async mounted() {
         this.fetchEntry();
 
-        if(this.$route.query.uid) {
+        if(this.$route.query.id) {
             this.nuxtload();
-            await this.fetchByUID(this.$route.query.uid);
+            await this.fetchByUID(this.$route.query.id);
             this.nuxtunload();
         }
     }

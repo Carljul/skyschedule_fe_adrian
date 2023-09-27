@@ -35,14 +35,14 @@ export default {
     },
     computed: {
         ...mapState({
-            state: state => state.order.order_by_id.state
+            state: state => state.order.order.state
         }),
     },
     methods: {
-        ...mapMutations('order/order_by_id', [
+        ...mapMutations('order/order', [
             'setState'
         ]),
-        ...mapActions('order/order_by_id', [
+        ...mapActions('order/order', [
             'fetchEntry'
         ])
     }

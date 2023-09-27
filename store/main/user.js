@@ -50,8 +50,12 @@ export const mutations = {
         state.state = {...state.state, inputs: defaultState.state.inputs};
     },
     updateEntryDataResponse(state, payload) {
-        const itemIndex = state.state.entry.data.findIndex(x => x.uid === payload.uid);
+        console.log(['payload', payload])
+        console.log(['state.state.entry.data', state.state.entry.data])
+        const itemIndex = state.state.entry.data.findIndex(x => x.id === payload.id);
+        console.log(['itemIndex', itemIndex])
         Vue.set(state.state.entry.data, itemIndex, payload);
+        console.log(['checking', state.state.entry.data[itemIndex]])
     },
     removeArrayState(state, payload) {
         Vue.delete(__get(state.state, payload.key), payload.index, 1);
@@ -61,11 +65,11 @@ export const mutations = {
 export const getters = {
     updateParams(state) {
         if(!state.state.selected) { return null; }
-        if(!state.state.selected.canupdatepassword) {
-            delete state.state.selected.user.password;
-            delete state.state.selected.user.password_confirmation;
-        }
-        delete state.state.selected.user.uid;
+        // if(!state.state.selected.canupdatepassword) {
+        //     delete state.state.selected.user.password;
+        //     delete state.state.selected.user.password_confirmation;
+        // }
+        // delete state.state.selected.user.uid;
         return {...state.state.selected, ...state.state.selected.user};
     }
 }
@@ -153,7 +157,7 @@ export const actions = {
     async StoreUpdateEntry({ state, getters, commit }) {
         const app = this._vm;
         try {
-            const res = await this.$axios.put(`/employees/${state.state.selected.uid}`, getters.updateParams);
+            const res = await this.$axios.put(`/users/${state.state.selected.id}`, getters.updateParams);
             commit('updateEntryDataResponse', res.data.response);
             app.notify({ title: 'Saved!', html: 'Changes has been saved.' });
         } catch($e) {

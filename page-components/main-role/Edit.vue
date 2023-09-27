@@ -43,7 +43,32 @@
                             />
                             <v-msg :error="errors[0]" />
                         </ValidationProvider>
-
+<!-- 
+                        <ValidationProvider ref="newentry_department_uid" name="Department" v-slot="{ validate, errors }" rules="required">
+                            <div class="form-group-wrap mb-3">
+                                <label class="mb-2 block text-xs font-medium --text-dark">Abilities</label>
+                                <client-only>
+                                    <t-select-dynamic 
+                                    :endpoint="`/abilities`" 
+                                    datakeylabel="name" 
+                                    datakeyvalue="id"
+                                    searchplaceholder="Type to Search Abilities"
+                                    placeholder="Choose Abilities"
+                                    multiple
+                                    class="py-1.5"
+                                    v-vchecker="errors[0]"
+                                    @input="e => setState({ inputs: { ...state.inputs, role_id: e } })"
+                                    ></t-select-dynamic>
+                                    <input type="hidden" 
+                                    :value="state.inputs.role_id" 
+                                    @input="e => {
+                                        setState({ inputs: { ...state.inputs, role_id: e.target.value } }); 
+                                        validate(e); 
+                                    }">
+                                </client-only>
+                                <v-msg :error="errors[0]" />
+                            </div>
+                        </ValidationProvider> -->
                         
 
                     </div>

@@ -7,6 +7,7 @@
     >
         <template slot="header">
             <h4 class="--text-heading text-lg font-semibold">
+                
                 <span>Edit Order</span>
             </h4>
         </template>
@@ -17,7 +18,7 @@
                 <form @submit.prevent="handleSubmit(savePostEntry)">
 
                     <div class="form-group-wrap mb-3">
-                        <label class="mb-2 block text-xs font-medium --text-dark">Status</label>
+                        <label class="mb-2 block text-xs font-medium --text-dark">{{  state.inputs.name  }} Status</label>
                         <client-only>
                             <client-only>
                                 <t-select-dynamic 
@@ -26,8 +27,8 @@
                                 datakeyvalue="id"
                                 searchplaceholder="Type to Search Status"
                                 placeholder="Choose Status"
-                                class="py-1.5"
-                                
+                                :value="state.inputs.item_status_id" 
+                                class="py-1.5"                               
                                 @input="e => {
                                     setState({
                                         inputs: {

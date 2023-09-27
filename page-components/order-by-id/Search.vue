@@ -8,7 +8,7 @@
                 </div>
                 <input 
                 type="text" 
-                class="border border-gray-300 --text-dark text-sm rounded block w-full pl-10 p-2" placeholder="Search"
+                class="border border-gray-300 --text-dark text-sm rounded block w-full pl-10 p-2" placeholder="Search by ID"
                 :value="state.entry.filter.query"
                 @input="e => setState({ entry: { ...state.entry, filter: { ...state.entry.filter, query: e.target.value } } })"
                 >
@@ -26,14 +26,14 @@ export default {
     },
     computed: {
         ...mapState({
-            state: state => state.employees.departments.state
+            state: state => state.order.order.state
         }),
     },
     methods: {
-        ...mapMutations('employees/departments', [
+        ...mapMutations('order/order', [
             'setState'
         ]),
-        ...mapActions('employees/departments', [
+        ...mapActions('order/order', [
             'fetchEntry'
         ])
     }

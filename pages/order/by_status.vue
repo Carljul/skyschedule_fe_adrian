@@ -38,7 +38,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions('order/order_by_status', [
+        ...mapActions('order/order', [
             'fetchEntry',
             'fetchByUID'
         ]),

@@ -48,12 +48,12 @@
                     <a :href="`mailto:${$auth.user.email}`" :class="linkclass">{{$auth.user.email}}</a>
                 </div>
                 <ul class="flex flex-col p-2 my-2 space-y-1">
-                    <li>
+                    <!-- <li>
                         <a href="/settings" @click.prevent="navigateTo('/settings')" class="block px-2 py-1 transition rounded-md hover:bg-gray-100 text-sm">Settings</a>
                     </li>
                     <li>
                         <a href="#" class="block px-2 py-1 transition rounded-md hover:bg-gray-100 text-sm">Preferences</a>
-                    </li>
+                    </li> -->
                     <li>
                         <a href="#" @click.prevent="logout" class="block px-2 py-1 transition rounded-md hover:bg-gray-100 text-sm">Logout</a>
                     </li>

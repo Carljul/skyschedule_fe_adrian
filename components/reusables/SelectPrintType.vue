@@ -21,47 +21,47 @@ export default {
             return [
                 {
                     label: 'All',
-                    value: {printType:1}
+                    value: {query:''}
                 },
                 {
                     label: 'Digital Cups',
-                    value: {printType:'digital_cups'}
+                    value: {query:'digital_cups'}
                 },
                 {
                     label: 'Digital Napkins',
-                    value: {printType:'digital_napkins'}
+                    value: {query:'digital_napkins'}
                 },
                 {
                     label: 'Digital Other',
-                    value: {printType:'digital_other'}
+                    value: {query:'digital_other'}
                 },
                 {
                     label: 'Hotstamp',
-                    value: {printType:'hotstamp'}
+                    value: {query:'hotstamp'}
                 },
                 {
                     label: 'Offset Cups',
-                    value: {printType:'offset_cups'}
+                    value: {query:'offset_cups'}
                 },
                 {
                     label: 'Offset Napkins',
-                    value: {printType:'offset_napkins'}
+                    value: {query:'offset_napkins'}
                 },
                 {
                     label: 'Outsourced',
-                    value: {printType:'outsourced'}
+                    value: {query:'outsourced'}
                 },
                 {
                     label: 'Pad',
-                    value: {printType:'pad'}
+                    value: {query:'pad'}
                 },
                 {
                     label: 'Screen Cups',
-                    value: {printType:'screen_cups'}
+                    value: {query:'screen_cups'}
                 },
                 {
                     label: 'Screen Napkins',
-                    value: {printType:'screen_napkins'}
+                    value: {query:'screen_napkins'}
                 },
 
             ];

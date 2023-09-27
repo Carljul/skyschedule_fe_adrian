@@ -7,8 +7,8 @@
             </div>
             <div class="content">
                 <div class="mb-2 float-right">
-                    <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md">Reset Column Settings</button>
-                    <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md">Reset Column Order</button>
+                    <!-- <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md">Reset Column Settings</button>
+                    <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md">Reset Column Order</button> -->
                     <Print />
                 </div>
                 
@@ -91,7 +91,7 @@
                             </td>
 
                             <td class="px-6 py-4 text-sm font-medium text-right  flex items-center justify-end">
-                                <nuxt-link v-if="entry.editable" :to="`/order?uid=${entry.uid}`" 
+                                <nuxt-link :to="`/order/by_printtype?uid=${entry.order_id}`" 
                                 class="ml-2 mt-2 --text-primary --text-primary-hover" :title="appdefaults.edit" v-tooltip="appdefaults.edit">
                                     <icon-edit />
                                 </nuxt-link>
@@ -164,14 +164,14 @@ export default {
     },
     computed: {
         ...mapState({
-            state: state => state.order.order_by_print_type.state
+            state: state => state.order.order.state
         }),
     },
     methods: {
-        ...mapMutations('order/order_by_print_type', [
+        ...mapMutations('order/order', [
             'setState'
         ]),
-        ...mapActions('order/order_by_print_type', [
+        ...mapActions('order/order', [
             'fetchEntry',
             'removeEntry'
         ]),

@@ -15,6 +15,12 @@
                     >
                         Name
                     </th>
+                    <th
+                        scope="col"
+                        class="px-6 py-3 text-xs font-medium tracking-wider text-left text-slate-50 uppercase"
+                    >
+                        Ability
+                    </th>
                    
                     <th scope="col" class="relative px-6 py-3">
                         <span class="sr-only">Options</span>
@@ -29,6 +35,9 @@
                     <td class="px-6 py-10 ">
                         <span class="--text-dark text-sm">{{ entry.name }}</span>
                     </td>    
+                    <td class="px-6 py-10 ">
+                        <span class="--text-dark text-sm">{{ entry.title }}</span>
+                    </td>            
                     <td class="px-6 py-10 ">
                         <span class="--text-dark text-sm">{{ entry.title }}</span>
                     </td>            

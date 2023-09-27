@@ -52,6 +52,31 @@
                             </div>
                         </ValidationProvider>
 
+                        <ValidationProvider ref="newentry_ability" name="Ability" v-slot="{ validate, errors }" rules="required">
+                            <div class="form-group-wrap mb-3">
+                                <label class="mb-2 block text-xs font-medium --text-dark">Abilities</label>
+                                <client-only>
+                                    <t-select-dynamic 
+                                    :endpoint="`/abilities`" 
+                                    datakeylabel="name" 
+                                    datakeyvalue="id"
+                                    searchplaceholder="Type to Search Abilities"
+                                    placeholder="Choose Abilities"
+                                    multiple
+                                    class="py-1.5"
+                                    v-vchecker="errors[0]"
+                                    @input="e => setState({ inputs: { ...state.inputs, role_id: e } })"
+                                    ></t-select-dynamic>
+                                    <input type="hidden" 
+                                    :value="state.inputs.role_id" 
+                                    @input="e => {
+                                        setState({ inputs: { ...state.inputs, role_id: e.target.value } }); 
+                                        validate(e); 
+                                    }">
+                                </client-only>
+                                <v-msg :error="errors[0]" />
+                            </div>
+                        </ValidationProvider>
                         <div class="form-group-wrap">
                             <async-button ref="newrole_btn" type="submit" :class="`p-3 ${btnclassnormal} mt-3`">
                                 Save Role
@@ -69,6 +94,7 @@ import AsyncButton from "@components/reusables/AsyncButton.vue";
 import Modal from "@components/reusables/Modal.vue";
 import { ValidationProvider, ValidationObserver } from "vee-validate";
 import VMsg from "@components/reusables/VeeMessage.vue";
+import TSelectDynamic from "@components/reusables/SelectDynamic.vue";
 
 import { mapState, mapMutations, mapActions } from "vuex"
 export default {
@@ -78,7 +104,8 @@ export default {
         Modal,
         ValidationProvider,
         ValidationObserver,
-        VMsg
+        VMsg,
+        TSelectDynamic
     },
     computed: {
         ...mapState({

@@ -31,8 +31,7 @@
                             </label>
                         </div>
 
-                        <div>
-
+                        <div v-if="state.selected.canupdatepassword">
                             <ValidationProvider vid="editentry_password" ref="editentry_password" name="Password"
                                 v-slot="{ validate, errors }" rules="required|min:8">
                                 <div class="form-group-wrap mb-2">
@@ -55,13 +54,11 @@
                                     <v-msg :error="errors[0]" />
                                 </div>
                             </ValidationProvider>
-
-
-                            <ValidationProvider vid="editentry_password" ref="editentry_password" name="Password"
-                                v-slot="{ validate, errors }" rules="required|min:8">
-                                <div class="form-group-wrap mb-2">
-                                    <label for="new-password"
-                                        class="mb-2 block text-xs font-medium --text-dark">Password</label>
+                            
+                            <ValidationProvider ref="newentry_password_confirmation" name="Confirm Password"
+                                v-slot="{ validate, errors }" rules="required|confirmed:newentry_password|min:8">
+                                <div class="form-group-wrap mb-3">
+                                    <label class="mb-1 block text-xs font-medium --text-dark">Confirm Password</label>
                                     <input :value="state.selected.password_confirmation" @input="e => {
                                         setState({
                                             selected: {
@@ -81,8 +78,6 @@
                             </ValidationProvider>
 
                         </div>
-
-
 
                         <h4 class="--text-dark font-semibold text-md mb-2 mt-10">Information</h4>
 
@@ -124,21 +119,69 @@
                             </div>
                         </ValidationProvider>
 
-                        <h4 class="--text-dark font-semibold text-md mb-2">Role and Ability</h4>
+                        <h4 class="--text-dark font-semibold text-md mb-2">Role</h4>
 
                         <ValidationProvider ref="user_role" name="Role" v-slot="{ validate, errors }" rules="required">
                             <div class="form-group-wrap mb-3">
                                 <label class="mb-1 block text-xs font-medium --text-dark">Role</label>
-                                <t-select v-bind="$attrs" v-on="$listeners" :options="rolesOption" label="label"
-                                    :clearable="false" :class="{ 'p-1.5': true }"
-                                    :value="state.selected.role != null ? state.selected.role.name : ''" @input="e => {
-                                        setState({ inputs: { ...state.inputs, role_id: e.value } });
+                                <client-only>
+                                    <t-select
+                                        v-bind="$attrs"
+                                        v-on="$listeners"
+                                        :options="rolesOption"
+                                        label="label"
+                                        :clearable="false"
+                                        :class="{ 'p-1.5': true }"
+                                        :value="state.selected.role != null ? state.selected.role.name : ''"
+                                        @input="e => {
+                                            setState({ selected: {
+                                                    ...state.selected,
+                                                    role: e.value,
+                                                    role_id: e.value
+                                                },
+                                            });
+                                            validate(e);
+                                        }"
+                                    />
+                                </client-only>
+<!--                                 
+                                <client-only>
+                                    <t-select-dynamic 
+                                    :endpoint="`/roles`" 
+                                    v-bind="$attrs"
+                                    v-on="$listeners"
+                                    datakeylabel="name" 
+                                    datakeyvalue="id"
+                                    searchplaceholder="Type to Search Roles"
+                                    placeholder="Choose Roles"
+                                    class="py-1.5"
+                                    v-vchecker="errors[0]"
+                                    :value="state.selected.role != null ? state.selected.role.name : ''"
+                                    @input="e => {
+                                        setState({ selected: {
+                                                ...state.selected,
+                                                role: e.value,
+                                                role_id: e.value
+                                            },
+                                        });
                                         validate(e);
-                                    }" />
+                                    }"
+                                    ></t-select-dynamic>
+                                    <input type="hidden" 
+                                    :value="state.selected.role != null ? state.selected.role.name : ''" 
+                                    @input="e => {
+                                        setState({ selected: {
+                                                ...state.selected,
+                                                role: e.value,
+                                                role_id: e.value
+                                            },
+                                        });
+                                        validate(e);
+                                    }">
+                                </client-only> -->
                                 <v-msg :error="errors[0]" />
                             </div>
                         </ValidationProvider>
-
                     </div>
 
                 </div>

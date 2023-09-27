@@ -3,7 +3,7 @@
         <ol class="inline-flex items-center space-x-1">
 
             <li class="inline-flex items-center">
-                <nuxt-link v-if="!disablemain" to="/" class="inline-flex items-center text-xs font-medium --text-primary --text-primary-hover">
+                <nuxt-link v-if="!disablemain" to="/order" class="inline-flex items-center text-xs font-medium --text-primary --text-primary-hover">
                     Home
                 </nuxt-link>
                 <span v-else class="text-xs font-medium --text-dark">Home</span>

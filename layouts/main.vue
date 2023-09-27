@@ -145,9 +145,7 @@ export default {
         ...mapMutations('global', [
             'setState'
         ]),
-        ...mapActions('employees/attendance', [
-            'fetchEntry',
-        ]),
+        
     },
     created() {
         // set default timezone and rounding settings
@@ -155,7 +153,7 @@ export default {
         moment.relativeTimeRounding(Math.floor);
     },
     mounted() {
-        this.fetchEntry();
+        
         this.pageTitle = this.page
     }
 }
