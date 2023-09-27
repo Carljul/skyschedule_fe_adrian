@@ -3,38 +3,36 @@
         <table class="w-full overflow-x-scroll divide-y divide-gray-200 border-4">
             <thead class="bg-violet-400">
                 <tr>
-                    <th
-                        scope="col"
-                        class="px-6 py-3 text-xs font-medium tracking-wider text-left text-slate-50 uppercase"
-                    >
+                    <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-slate-50 uppercase">
                         Username
                     </th>
 
-                    <th
-                        scope="col"
-                        class="px-6 py-3 text-xs font-medium tracking-wider text-left text-slate-50 uppercase"
-                    >
+                    <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-slate-50 uppercase">
                         Name
                     </th>
 
-                    <th
-                        scope="col"
-                        class="px-6 py-3 text-xs font-medium tracking-wider text-left text-slate-50 uppercase"
-                    >
+                    <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-slate-50 uppercase">
                         Email
                     </th>
-                    
-                    <th 
-                        scope="col"
-                        class="px-6 py-3 text-xs font-medium tracking-wider text-left text-slate-50 uppercase"
-                    ></th>
+
+                    <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-slate-50 uppercase">
+                        Role
+                    </th>
+
+                    <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-slate-50 uppercase">
+                        Ability
+                    </th>
+
+                    <th scope="col" class="px-6 py-3 text-xs font-medium tracking-wider text-left text-slate-50 uppercase">
+                    </th>
                 </tr>
             </thead>
 
 
             <tbody v-if="!state.entry.loading" class="bg-white divide-y divide-gray-200">
-                <tr v-for="(entry, entryindex) in state.entry.data" :key="`department-entry-${genKey(entry)}`" class="transition-all hover:bg-gray-100">
-                    
+                <tr v-for="(entry, entryindex) in state.entry.data" :key="`department-entry-${genKey(entry)}`"
+                    class="transition-all hover:bg-gray-100">
+
                     <td class="px-6 py-10 ">
                         <span class="--text-dark text-sm">{{ entry.username }}</span>
                     </td>
@@ -44,32 +42,40 @@
 
                     <td class="px-6 py-4 ">
                         <span class="--text-dark text-xs block max-w-xs">{{ entry.email }}</span>
-                    </td>                    
+                    </td>
+
+                    <td class="px-6 py-4 ">
+                        <span class="--text-dark text-xs block max-w-xs">{{ entry.role != null ? entry.role.name : ''
+                        }}</span>
+                    </td>
+
+                    <td class="px-6 py-4 ">
+                        <span class="--text-dark text-xs block max-w-xs"></span>
+                    </td>
 
                     <td class="px-6 py-4 text-sm font-medium text-right  flex items-center justify-end">
-                        <nuxt-link  :to="`/user?id=${entry.id}`" 
-                        class="ml-2 mt-2 --text-primary --text-primary-hover" :title="appdefaults.edit" v-tooltip="appdefaults.edit">
+                        <nuxt-link :to="`/user?id=${entry.id}`" class="ml-2 mt-2 --text-primary --text-primary-hover"
+                            :title="appdefaults.edit" v-tooltip="appdefaults.edit">
                             <icon-edit />
                         </nuxt-link>
 
-                        <a 
-                        
-                        href="#" @click.prevent="() => {
+                        <a href="#" @click.prevent="() => {
                             $refs.alertconfirm.$alert({
                                 title: appdefaults.trashConfirm.title,
                                 html: appdefaults.trashConfirm.html,
-                                execute: async function() {
+                                execute: async function () {
                                     await removeEntry(entry);
                                     notify({ title: 'Success!', html: `User ${appdefaults.trashConfirm.success}` });
                                 }
                             });
-                        }" class="ml-2 mt-2 --text-primary --text-primary-hover mr-10" :title="appdefaults.trash" v-tooltip="appdefaults.trash">
+                        }" class="ml-2 mt-2 --text-primary --text-primary-hover mr-10" :title="appdefaults.trash"
+                            v-tooltip="appdefaults.trash">
                             <icon-trash />
                         </a>
                     </td>
                 </tr>
             </tbody>
-            
+
         </table>
 
 
@@ -80,16 +86,14 @@
             </div>
         </div>
 
-        <p class="text-center ml-1 text-xs font-medium --text-dark mt-5" v-if="!state.entry.loading && !state.entry.data.length">
+        <p class="text-center ml-1 text-xs font-medium --text-dark mt-5"
+            v-if="!state.entry.loading && !state.entry.data.length">
             There is no user here.
         </p>
 
         <client-only>
-            <page 
-            @paginate="paginate" 
-            :page="state.entry.filter.page" 
-            :total="state.entry.pagination.total" 
-            :total-pages="state.entry.pagination.total_pages"  />
+            <page @paginate="paginate" :page="state.entry.filter.page" :total="state.entry.pagination.total"
+                :total-pages="state.entry.pagination.total_pages" />
         </client-only>
 
         <alert-confirm ref="alertconfirm"></alert-confirm>

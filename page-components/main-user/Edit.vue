@@ -1,18 +1,16 @@
 <template>
-    <modal ref="modal_editentry" 
-    @close="() => {
+    <modal ref="modal_editentry" @close="() => {
         setState({ ...state, selected: null });
         $router.push('/user');
-    }"
-    nofooter contentclass="xl:w-6/12 md:w-9/12 sm:w-11/12">
+    }" nofooter contentclass="xl:w-6/12 md:w-9/12 sm:w-11/12">
         <template v-if="state.selected" slot="header">
             <h4 class="--text-heading text-lg font-semibold">
-                <span>Edit Employee ({{state.selected.__title}})</span>
+                <span>Edit Employee ({{ state.selected.__title }})</span>
             </h4>
         </template>
 
         <template v-if="state.selected" slot="content">
-            <EditForm/>
+            <EditForm />
         </template>
     </modal>
 </template>

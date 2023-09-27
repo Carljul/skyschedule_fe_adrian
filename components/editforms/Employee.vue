@@ -1,104 +1,92 @@
 <template>
     <div>
         <ValidationObserver ref="editentry" v-slot="{ handleSubmit }">
-        <form @submit.prevent="handleSubmit(updateEntry)">
+            <form @submit.prevent="handleSubmit(updateEntry)">
 
-            <div class="">
-                <div>
-                    <h4 class="--text-dark font-semibold text-md mb-2">Credential</h4>
-                    <ValidationProvider ref="editentry_email" name="Email" v-slot="{ validate, errors }" rules="required|email">
-                        <div class="form-group-wrap mb-2">
-                            <label for="new-email" class="mb-2 block text-xs font-medium --text-dark">Email</label>
-                            <input 
-                            :value="state.selected.email"
-                            @input="e => { 
-                                setState({ selected: { ...state.selected, user: { ...state.selected, email: e.target.value } } }); 
-                                validate(e); 
-                            }"
-                            type="email"
-                            class="v-input border border-gray-300 --text-dark text-sm rounded block w-full px-3 p-2 input-focus-border" 
-                            v-vchecker="errors[0]"
-                            />
-                            <v-msg :error="errors[0]" />
+                <div class="">
+                    <div>
+                        <h4 class="--text-dark font-semibold text-md mb-2">Credential</h4>
+                        <ValidationProvider ref="editentry_email" name="Email" v-slot="{ validate, errors }"
+                            rules="required|email">
+                            <div class="form-group-wrap mb-2">
+                                <label for="new-email" class="mb-2 block text-xs font-medium --text-dark">Email</label>
+                                <input :value="state.selected.email" @input="e => {
+                                    setState({ selected: { ...state.selected, user: { ...state.selected, email: e.target.value } } });
+                                    validate(e);
+                                }" type="email"
+                                    class="v-input border border-gray-300 --text-dark text-sm rounded block w-full px-3 p-2 input-focus-border"
+                                    v-vchecker="errors[0]" />
+                                <v-msg :error="errors[0]" />
+                            </div>
+                        </ValidationProvider>
+
+
+                        <div class="form-group-wrap mb-3">
+                            <label class="--text-dark mb-2 text-sm block">
+                                <input type="checkbox" :true-value="true" :false-value="false"
+                                    :checked="state.selected.canupdatepassword" @input="e => {
+                                        setState({ selected: { ...state.selected, canupdatepassword: !state.selected.canupdatepassword } });
+                                    }" class="mr-1" />
+                                Update the password
+                            </label>
                         </div>
-                    </ValidationProvider>
-                    
 
-                    <div class="form-group-wrap mb-3">
-                        <label
-                        class="--text-dark mb-2 text-sm block"
-                        >
-                        <input type="checkbox"
-                        :true-value="true"
-                        :false-value="false"
-                        :checked="state.selected.canupdatepassword"
-                        @input="e => { 
-                            setState({ selected: { ...state.selected, canupdatepassword: !state.selected.canupdatepassword } });
-                        }" class="mr-1" />
-                        Update the password
-                        </label>
-                    </div>
+                        <div>
 
-                    <div >
-
-                        <ValidationProvider vid="editentry_password" ref="editentry_password" name="Password" v-slot="{ validate, errors }" rules="required|min:8">
-                            <div class="form-group-wrap mb-2">
-                                <label for="new-password" class="mb-2 block text-xs font-medium --text-dark">Password</label>
-                                <input 
-                                :value="state.selected.password"
-                                @input="e => { 
-                                    setState({ 
-                                        selected: {
-                                            ...state.selected,
-                                            user: {
+                            <ValidationProvider vid="editentry_password" ref="editentry_password" name="Password"
+                                v-slot="{ validate, errors }" rules="required|min:8">
+                                <div class="form-group-wrap mb-2">
+                                    <label for="new-password"
+                                        class="mb-2 block text-xs font-medium --text-dark">Password</label>
+                                    <input :value="state.selected.password" @input="e => {
+                                        setState({
+                                            selected: {
                                                 ...state.selected,
-                                                password: e.target.value
+                                                user: {
+                                                    ...state.selected,
+                                                    password: e.target.value
+                                                }
                                             }
-                                        }
-                                    }); 
-                                    validate(e); 
-                                }"
-                                type="password"
-                                class="v-input border border-gray-300 --text-dark text-sm rounded block w-full px-3 p-2 input-focus-border" 
-                                v-vchecker="errors[0]"
-                                />
-                                <v-msg :error="errors[0]" />
-                            </div>
-                        </ValidationProvider>
+                                        });
+                                        validate(e);
+                                    }" type="password"
+                                        class="v-input border border-gray-300 --text-dark text-sm rounded block w-full px-3 p-2 input-focus-border"
+                                        v-vchecker="errors[0]" />
+                                    <v-msg :error="errors[0]" />
+                                </div>
+                            </ValidationProvider>
 
 
-                        <ValidationProvider vid="editentry_password" ref="editentry_password" name="Password" v-slot="{ validate, errors }" rules="required|min:8">
-                            <div class="form-group-wrap mb-2">
-                                <label for="new-password" class="mb-2 block text-xs font-medium --text-dark">Password</label>
-                                <input 
-                                :value="state.selected.password_confirmation"
-                                @input="e => { 
-                                    setState({ 
-                                        selected: {
-                                            ...state.selected,
-                                            user: {
+                            <ValidationProvider vid="editentry_password" ref="editentry_password" name="Password"
+                                v-slot="{ validate, errors }" rules="required|min:8">
+                                <div class="form-group-wrap mb-2">
+                                    <label for="new-password"
+                                        class="mb-2 block text-xs font-medium --text-dark">Password</label>
+                                    <input :value="state.selected.password_confirmation" @input="e => {
+                                        setState({
+                                            selected: {
                                                 ...state.selected,
-                                                password_confirmation: e.target.value
+                                                user: {
+                                                    ...state.selected,
+                                                    password_confirmation: e.target.value
+                                                }
                                             }
-                                        }
-                                    }); 
-                                    validate(e); 
-                                }"
-                                type="password"
-                                class="v-input border border-gray-300 --text-dark text-sm rounded block w-full px-3 p-2 input-focus-border" 
-                                v-vchecker="errors[0]"
-                                />
-                                <v-msg :error="errors[0]" />
-                            </div>
-                        </ValidationProvider>
+                                        });
+                                        validate(e);
+                                    }" type="password"
+                                        class="v-input border border-gray-300 --text-dark text-sm rounded block w-full px-3 p-2 input-focus-border"
+                                        v-vchecker="errors[0]" />
+                                    <v-msg :error="errors[0]" />
+                                </div>
+                            </ValidationProvider>
 
-                    </div>
+                        </div>
 
 
 
-                    <h4 class="--text-dark font-semibold text-md mb-2 mt-10">Information</h4>
+                        <h4 class="--text-dark font-semibold text-md mb-2 mt-10">Information</h4>
 
-                    <!-- <div class="form-group-wrap mb-2">
+                        <!-- <div class="form-group-wrap mb-2">
                         <label for="new-firstname" class="mb-2 block text-xs font-medium --text-dark">Employee Photo</label>
                         <dropzone-min
                         :mimes="imageMimes"
@@ -109,55 +97,61 @@
                         }"
                         />
                     </div> -->
-                    <ValidationProvider ref="editentry_username" name="username" v-slot="{ validate, errors }" rules="required">
-                        <div class="form-group-wrap mb-2">
-                            <label for="new-username" class="mb-2 block text-xs font-medium --text-dark">Username</label>
-                            <input 
-                            :value="state.selected.username"
-                            @input="e => { 
-                                setState({ selected: { ...state.selected, username: e.target.value } }); 
-                                validate(e); 
-                            }"
-                            type="text"
-                            class="v-input border border-gray-300 --text-dark text-sm rounded block w-full px-3 p-2 input-focus-border" 
-                            v-vchecker="errors[0]"
-                            />
-                            <v-msg :error="errors[0]" />
-                        </div>
-                    </ValidationProvider>
-                    <ValidationProvider ref="editentry_name" name="name" v-slot="{ validate, errors }" rules="required">
-                        <div class="form-group-wrap mb-2">
-                            <label for="new-name" class="mb-2 block text-xs font-medium --text-dark">Name</label>
-                            <input 
-                            :value="state.selected.name"
-                            @input="e => { 
-                                setState({ selected: { ...state.selected, name: e.target.value } }); 
-                                validate(e); 
-                            }"
-                            type="text"
-                            class="v-input border border-gray-300 --text-dark text-sm rounded block w-full px-3 p-2 input-focus-border" 
-                            v-vchecker="errors[0]"
-                            />
-                            <v-msg :error="errors[0]" />
-                        </div>
-                    </ValidationProvider>
-                    
+                        <ValidationProvider ref="editentry_username" name="username" v-slot="{ validate, errors }"
+                            rules="required">
+                            <div class="form-group-wrap mb-2">
+                                <label for="new-username"
+                                    class="mb-2 block text-xs font-medium --text-dark">Username</label>
+                                <input :value="state.selected.username" @input="e => {
+                                    setState({ selected: { ...state.selected, username: e.target.value } });
+                                    validate(e);
+                                }" type="text"
+                                    class="v-input border border-gray-300 --text-dark text-sm rounded block w-full px-3 p-2 input-focus-border"
+                                    v-vchecker="errors[0]" />
+                                <v-msg :error="errors[0]" />
+                            </div>
+                        </ValidationProvider>
+                        <ValidationProvider ref="editentry_name" name="name" v-slot="{ validate, errors }" rules="required">
+                            <div class="form-group-wrap mb-2">
+                                <label for="new-name" class="mb-2 block text-xs font-medium --text-dark">Name</label>
+                                <input :value="state.selected.name" @input="e => {
+                                    setState({ selected: { ...state.selected, name: e.target.value } });
+                                    validate(e);
+                                }" type="text"
+                                    class="v-input border border-gray-300 --text-dark text-sm rounded block w-full px-3 p-2 input-focus-border"
+                                    v-vchecker="errors[0]" />
+                                <v-msg :error="errors[0]" />
+                            </div>
+                        </ValidationProvider>
 
+                        <h4 class="--text-dark font-semibold text-md mb-2">Role and Ability</h4>
 
+                        <ValidationProvider ref="user_role" name="Role" v-slot="{ validate, errors }" rules="required">
+                            <div class="form-group-wrap mb-3">
+                                <label class="mb-1 block text-xs font-medium --text-dark">Role</label>
+                                <t-select v-bind="$attrs" v-on="$listeners" :options="rolesOption" label="label"
+                                    :clearable="false" :class="{ 'p-1.5': true }"
+                                    :value="state.selected.role != null ? state.selected.role.name : ''" @input="e => {
+                                        setState({ inputs: { ...state.inputs, role_id: e.value } });
+                                        validate(e);
+                                    }" />
+                                <v-msg :error="errors[0]" />
+                            </div>
+                        </ValidationProvider>
+
+                    </div>
 
                 </div>
 
-            </div>
 
 
+                <div class="form-group-wrap">
+                    <async-button ref="editentry_btn" type="submit" :class="`p-3 ${btnclassnormal} mt-3`">
+                        Save Changes
+                    </async-button>
+                </div>
 
-            <div class="form-group-wrap">
-                <async-button ref="editentry_btn" type="submit" :class="`p-3 ${btnclassnormal} mt-3`">
-                    Save Changes
-                </async-button>
-            </div>
-
-        </form>
+            </form>
         </ValidationObserver>
     </div>
 </template>
@@ -171,6 +165,7 @@ import DatePickerCustom from "@components/reusables/DatePicker.vue";
 import { ValidationProvider, ValidationObserver } from "vee-validate";
 import VMsg from "@components/reusables/VeeMessage.vue";
 import { VueMaskDirective } from "v-mask";
+import TSelect from "@components/reusables/Select.vue";
 
 import { mapState, mapMutations, mapActions } from "vuex";
 
@@ -185,6 +180,11 @@ export default {
     directives: {
         mask: VueMaskDirective
     },
+    data() {
+        return {
+            rolesOption: []
+        }
+    },
     components: {
         AsyncButton,
         TSelectDynamic,
@@ -194,31 +194,49 @@ export default {
         tDatepicker: DatePickerCustom,
         ValidationProvider,
         ValidationObserver,
-        VMsg
+        VMsg,
+        TSelect
     },
     computed: {
         ...mapState({
-            state: state => state.main.user.state
+            state: state => state.main.user.state,
+            role: state => state.main.role.state
         }),
+    },
+    async mounted() {
+        await this.setupRoleDropdown();
     },
     methods: {
         ...mapMutations('main/user', [
-            'setState',            
+            'setState',
             'updateArrayState',
             'removeArrayState'
         ]),
         ...mapActions('main/user', [
             'StoreUpdateEntry'
         ]),
+        ...mapActions('main/role', {
+            fetchRoleEntry: 'fetchEntry'
+        }),
         async updateEntry() {
             try {
                 this.$refs.editentry_btn.loading = true;
                 await this.StoreUpdateEntry();
                 this.$refs.editentry_btn.loading = false;
                 this.$refs.editentry.reset();
-            } catch($e) {
+            } catch ($e) {
                 this.errorHandle($e, 'editentry');
                 this.$refs.editentry_btn.loading = false;
+            }
+        },
+        async setupRoleDropdown() {
+            await this.fetchRoleEntry();
+            var roleData = this.role.entry.data;
+            for (var x = 0; x < roleData.length; x++) {
+                this.rolesOption.push({
+                    label: roleData[x].name,
+                    value: roleData[x].id,
+                });
             }
         }
     }
