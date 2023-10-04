@@ -8,7 +8,13 @@ const getDefaultState = () => {
     return {
         state: {
             inputs: {
-                name: ''
+                name: '',
+                username: '',
+                email: '',
+                password: '',
+                password_confirmation: '',                
+                image: null,
+                avatar: null,
             },
             selected: null,
             entry: {
@@ -44,11 +50,29 @@ export const mutations = {
         state.state = {...state.state, inputs: defaultState.state.inputs};
     },
     updateEntryDataResponse(state, payload) {
-        const itemIndex = state.state.entry.data.findIndex(x => x.uid === payload.uid);
+        console.log(['payload', payload])
+        console.log(['state.state.entry.data', state.state.entry.data])
+        const itemIndex = state.state.entry.data.findIndex(x => x.id === payload.id);
+        console.log(['itemIndex', itemIndex])
         Vue.set(state.state.entry.data, itemIndex, payload);
+        console.log(['checking', state.state.entry.data[itemIndex]])
+    },
+    removeArrayState(state, payload) {
+        Vue.delete(__get(state.state, payload.key), payload.index, 1);
     }
 }
-
+// getters
+export const getters = {
+    updateParams(state) {
+        if(!state.state.selected) { return null; }
+        // if(!state.state.selected.canupdatepassword) {
+        //     delete state.state.selected.user.password;
+        //     delete state.state.selected.user.password_confirmation;
+        // }
+        // delete state.state.selected.user.uid;
+        return {...state.state.selected, ...state.state.selected.user};
+    }
+}
 // actions
 export const actions = {
     async fetchEntry({ state, commit }) {
@@ -89,14 +113,20 @@ export const actions = {
         }
     },
 
-    async fetchByUID({commit}, payload) {
+    async fetchByID({commit}, payload) {
         const app = this._vm;
         if(!payload) { return; }
         try {
-            const res = await this.$axios.get(`${app.getOrgUID}/users/${payload}`);
-            commit('setState', { handle: 'state', key: 'inputs', value: res.data.response });
+            const res = await this.$axios.get(`/users/${payload}`);
+            commit('setState', {
+                selected: {
+                    ...res.data.response,
+                    __title: res.data.response.name
+                }
+            });
+
             app.$nextTick(() => {
-                app.findPageComponent('MainOrderForm').$refs.adjustmentmodal.open=true;
+                app.findPageComponent('UsersIndexEdit').$refs.modal_editentry.open=true;
             });
             return res.data.response;
         } catch($e) {
@@ -104,31 +134,46 @@ export const actions = {
         }
     },
 
-    async saveEntry({ state, commit, dispatch }) {
-        const app = this._vm;
-        try {
-            let res = null
-            if(state.state.inputs.uid) {
-                res = await this.$axios.put(`/${app.getOrgUID}/users/${state.state.inputs.uid}`, state.state.inputs);
-                commit('updateEntryDataResponse', res.data.response);
-                app.notify({ title: 'Saved!', html: 'Overtime has been saved.' });
-            } else {
-                res = await this.$axios.post(`/${app.getOrgUID}/users`, state.state.inputs);
-                app.notify({ title: 'Saved!', html: 'Overtime has been added.' });
-                dispatch('fetchEntry');
-            }
-        } catch($e) {
-            throw $e;
-        }
-    },
-
     async removeEntry({ dispatch }, payload) {
         const app = this._vm;
         try {
-            await this.$axios.delete(`${app.getOrgUID}/users/${payload.uid}`);
+            await this.$axios.delete(`/users/${payload.id}`);
             dispatch('fetchEntry');
         } catch($e) {
             app.errorHandle($e);
         }
-    }
+    },
+
+    async restoreEntry({dispatch}, payload) {
+        const app = this._vm;
+        try {
+            await this.$axios.patch(`/employees/${payload.id}`);
+            dispatch('fetchEntry');
+        } catch($e) {
+            app.errorHandle($e);
+        }
+    },
+
+    async StoreUpdateEntry({ state, getters, commit }) {
+        const app = this._vm;
+        try {
+            const res = await this.$axios.put(`/users/${state.state.selected.id}`, getters.updateParams);
+            commit('updateEntryDataResponse', res.data.response);
+            app.notify({ title: 'Saved!', html: 'Changes has been saved.' });
+        } catch($e) {
+            return $e;
+        }
+    },
+
+    async StoreInsertEntry({ state, dispatch, commit }) {
+        const app = this._vm;
+        try {
+            await this.$axios.post(`/users`, state.state.inputs);
+            app.notify({ title: 'Saved!', html: 'New employee has been added.' });
+            dispatch('fetchEntry');
+            commit('resetInputs');
+        } catch($e) {
+            throw $e;
+        }
+    }, 
 };

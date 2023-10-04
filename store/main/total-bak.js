@@ -66,8 +66,7 @@ export const state = () => ({
             startDate: null,
             endDate: null
         }
-    },
-    print: null
+    }
 });
 
 // mutations
@@ -92,9 +91,6 @@ export const mutations = {
     },
     setTotals(state, payload) {
         state.totals = payload
-    },
-    setToPrint(state, data) {
-        state.print = data
     }
 }
 
@@ -217,62 +213,6 @@ export const actions = {
             commit('setTotals', res.data);
         } catch($e) {
             commit('setTotals', []);
-        }
-    },
-
-    async fetchToPrint({state, commit}, payload) {
-        try {
-            commit('setState', { 
-                entry: { 
-                    ...state.state.entry, 
-                    loading: true 
-                } 
-            });
-            
-            let entry = localStorage.getItem('total-entry');
-
-            const res = await this.$axios.get(`/totals/print/report`, {
-              headers: {
-                'Accept': 'application/pdf',
-              },
-              responseType: 'blob', // Set the responseType to 'blob'
-              params: {
-                ...(JSON.parse(entry)).filter,
-                print: true,
-              },
-            });
-          
-            const blob = new Blob([res.data], { type: 'application/pdf' });
-          
-            // Create a temporary anchor element to trigger the download
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            let filename = new Date().getTime();
-            link.download = filename + '.pdf'; // You can specify the desired filename
-          
-
-            // Do not delete this: This will download as pdf file
-            // Trigger a click event on the anchor element
-            // link.click();
-          
-            // Release the object URL to free up resources
-            // window.URL.revokeObjectURL(link.href);
-            
-            commit('setState', { 
-                entry: { 
-                    ...state.state.entry, 
-                    loading: false 
-                } 
-            });
-            commit('setToPrint', link.href);
-        } catch ($e) {
-            commit('setState', { 
-                entry: { 
-                    ...state.state.entry, 
-                    loading: false 
-                } 
-            });
-            throw $e;
         }
     }
 };

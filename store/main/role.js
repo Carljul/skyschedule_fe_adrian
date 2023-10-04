@@ -8,7 +8,8 @@ const getDefaultState = () => {
     return {
         state: {
             inputs: {
-                name: ''
+                name: '',
+                title: ''
             },
             selected: null,
             entry: {
@@ -44,7 +45,7 @@ export const mutations = {
         state.state = {...state.state, inputs: defaultState.state.inputs};
     },
     updateEntryDataResponse(state, payload) {
-        const itemIndex = state.state.entry.data.findIndex(x => x.uid === payload.uid);
+        const itemIndex = state.state.entry.data.findIndex(x => x.id === payload.id);
         Vue.set(state.state.entry.data, itemIndex, payload);
     }
 }
@@ -89,14 +90,19 @@ export const actions = {
         }
     },
 
-    async fetchByUID({commit}, payload) {
+    async fetchByID({commit}, payload) {
         const app = this._vm;
         if(!payload) { return; }
         try {
-            const res = await this.$axios.get(`${app.getOrgUID}/roles/${payload}`);
-            commit('setState', { handle: 'state', key: 'inputs', value: res.data.response });
+            const res = await this.$axios.get(`/roles/${payload}`);
+            commit('setState', {
+                selected: {
+                    ...res.data.response,
+                    __title: res.data.response.name
+                }
+            });
             app.$nextTick(() => {
-                app.findPageComponent('MainRoleForm').$refs.adjustmentmodal.open=true;
+                app.findPageComponent('RoleIndexEdit').$refs.modal_editentry.open=true;
             });
             return res.data.response;
         } catch($e) {
@@ -104,31 +110,46 @@ export const actions = {
         }
     },
 
-    async saveEntry({ state, commit, dispatch }) {
+    async removeEntry({ dispatch }, payload) {
         const app = this._vm;
         try {
-            let res = null
-            if(state.state.inputs.uid) {
-                res = await this.$axios.put(`/${app.getOrgUID}/roles/${state.state.inputs.uid}`, state.state.inputs);
-                commit('updateEntryDataResponse', res.data.response);
-                app.notify({ title: 'Saved!', html: 'Overtime has been saved.' });
-            } else {
-                res = await this.$axios.post(`/${app.getOrgUID}/roles`, state.state.inputs);
-                app.notify({ title: 'Saved!', html: 'Overtime has been added.' });
-                dispatch('fetchEntry');
-            }
+            await this.$axios.delete(`/roles/${payload.id}`);
+            dispatch('fetchEntry');
+        } catch($e) {
+            app.errorHandle($e);
+        }
+    },
+
+    async restoreEntry({dispatch}, payload) {
+        const app = this._vm;
+        try {
+            await this.$axios.patch(`/roles/${payload.id}`);
+            dispatch('fetchEntry');
+        } catch($e) {
+            app.errorHandle($e);
+        }
+    },
+
+    async StoreUpdateEntry({ state, commit }) {
+        const app = this._vm;
+        try {
+            const res = await this.$axios.put(`/roles/${state.state.selected.id}`, state.state.selected);
+            commit('updateEntryDataResponse', res.data.response)
+            app.notify({ title: 'Saved!', html: 'Changes has been saved.' });
         } catch($e) {
             throw $e;
         }
     },
-
-    async removeEntry({ dispatch }, payload) {
+    
+    async StoreInsertEntry({ state, commit, dispatch }) {
         const app = this._vm;
         try {
-            await this.$axios.delete(`${app.getOrgUID}/roles/${payload.uid}`);
+            await this.$axios.post(`/roles`, state.state.inputs);
             dispatch('fetchEntry');
+            commit('resetInputs');
+            app.notify({ title: 'Saved!', html: 'New Role has been saved.' });
         } catch($e) {
-            app.errorHandle($e);
+            throw $e;
         }
     }
 };

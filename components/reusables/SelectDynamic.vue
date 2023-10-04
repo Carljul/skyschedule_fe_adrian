@@ -120,7 +120,7 @@ export default {
                         ...this.filter,
                         ...$args,
                         ...this.apiargs,
-                        orderByField: this.value ? `uid:${this.value}` : null
+                        orderByField: this.value ? `id:${this.value}` : null
                     }
                 });
 

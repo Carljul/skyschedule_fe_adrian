@@ -10,7 +10,7 @@
                 type="text" 
                 class="border border-gray-300 --text-dark text-sm rounded block w-full pl-10 p-2" placeholder="Search"
                 :value="state.entry.filter.query"
-                @input="e => setState({ entry: { ...state.entry, filter: { ...state.entry.filter, query: e.target.value } } })"
+                @input="handleInput"
                 >
             </div>
         </form>
@@ -35,7 +35,11 @@ export default {
         ]),
         ...mapActions('order/order', [
             'fetchEntry'
-        ])
+        ]),
+        handleInput(e) {
+            this.setState({ entry: { ...this.state.entry, filter: { ...this.state.entry.filter, query: e.target.value } } });
+            localStorage.setItem('order-entry', JSON.stringify(this.state.entry))
+        }
     }
 }
 </script>

@@ -1,21 +1,15 @@
 <template>
     <div class="index-time-sheet-filter mb-5  mt-3 flex">
         <div>
+
             <client-only>
-                <label class="mb-2 block text-xs font-medium --text-dark">Filter Date:</label>
-                <t-datepicker-range
-                ref="timesheetrange"
-                :value="state.entry.filter.range"
-                @input="e => {
-                    setState({ handle: 'state.entry.filter', key: 'range', value: e });
-                    fetchEntry();
-                }"
-                @clearDate="() => {
-                    setState({ handle: 'state.entry.filter', key: 'range', value: null });
-                    fetchEntry();
-                }"
-                mode="dateTime"
-                ></t-datepicker-range>
+            <t-datepicker mode="date" 
+            :value="state.entry.filter.query"
+            @input="e => {             
+                setState({ entry: { ...state.entry, filter: { ...state.entry.filter, query: $moment(e).format('YYYY-MM-DD') } } });
+                fetchEntry();
+            }"
+            ></t-datepicker>
             </client-only>
         </div>
 
@@ -26,23 +20,28 @@
     </div>
 </template>
 <script>
+import TSelectStatus from "@components/reusables/SelectPrintType.vue";
 import DateRangePickerCustom from "@components/reusables/DateRangePicker.vue";
+import DatePickerCustom from "@components/reusables/DatePicker.vue";
+import moment from "moment-timezone";
 import { mapState, mapMutations, mapActions } from "vuex"
 export default {
     name: 'MainOverTimeFilter',
     components: {
-        tDatepickerRange: DateRangePickerCustom
+        tDatepickerRange: DateRangePickerCustom,
+        TSelectStatus,
+        tDatepicker: DatePickerCustom,
     },
     computed: {
         ...mapState({
-            state: state => state.order.order_by_date.state
+            state: state => state.order.order.state
         }),
     },
     methods: {
-        ...mapMutations('order/order_by_date', [
+        ...mapMutations('order/order', [
             'setState'
         ]),
-        ...mapActions('order/order_by_date', [
+        ...mapActions('order/order', [
             'fetchEntry'
         ])
     }

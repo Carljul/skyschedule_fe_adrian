@@ -3,12 +3,13 @@
         <div class="table-container bg-violet-400">
             <div class="title bg-violet-400 h-64px">
                 <h4>Listing of all Orders and their Line Items by Date</h4>
-                <DatePicker v-model="dateData"/>
+                <page-filter />
+                <!-- <DatePicker v-model="dateData"/> -->                
             </div>
             <div class="content">
                 <div class="mb-2 float-right">
-                    <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md">Reset Column Settings</button>
-                    <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md">Reset Column Order</button>
+                    <!-- <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md">Reset Column Settings</button>
+                    <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md">Reset Column Order</button> -->
                     <Print />
                 </div>
 
@@ -57,6 +58,7 @@
                             </th>
 
                             <th 
+                                v-if="$auth.user.role_id == 1"
                                 scope="col"
                                 class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
                             ></th>
@@ -90,8 +92,8 @@
                                 <span class="--text-dark text-xs block max-w-xs">{{ entry.sold }}</span>
                             </td>
 
-                            <td class="px-6 py-4 text-sm font-medium text-right  flex items-center justify-end">
-                                <nuxt-link v-if="entry.editable" :to="`/order?uid=${entry.uid}`" 
+                            <td v-if="$auth.user.role_id == 1" class="px-6 py-4 text-sm font-medium text-right  flex items-center justify-end">
+                                <nuxt-link :to="`/order/by_date?uid=${entry.order_id}`" 
                                 class="ml-2 mt-2 --text-primary --text-primary-hover" :title="appdefaults.edit" v-tooltip="appdefaults.edit">
                                     <icon-edit />
                                 </nuxt-link>
@@ -149,8 +151,8 @@ import IconEdit from "@components/reusables/IconEdit.vue";
 import IconTrash from "@components/reusables/IconTrash.vue";
 import AlertConfirm from "@components/reusables/AlertConfirm.vue";
 import Print from "@page_components/main-order/Print.vue";
-import DatePicker from "@components/reusables/DatePicker.vue";
-
+import DatePickerCustom from "@components/reusables/DatePicker.vue";
+import PageFilter from "@page_components/order-by-date/Filter.vue";
 import { mapState, mapMutations, mapActions } from "vuex"
 
 import { ref } from 'vue';
@@ -164,7 +166,8 @@ export default {
         IconTrash,
         AlertConfirm,
         Print,
-        DatePicker
+        DatePickerCustom,
+        PageFilter
     },
     data() {
         return {
@@ -173,14 +176,14 @@ export default {
     },
     computed: {
         ...mapState({
-            state: state => state.order.order_by_date.state
+            state: state => state.order.order.state
         }),
     },
     methods: {
-        ...mapMutations('order/order_by_date', [
+        ...mapMutations('order/order', [
             'setState'
         ]),
-        ...mapActions('order/order_by_date', [
+        ...mapActions('order/order', [
             'fetchEntry',
             'removeEntry'
         ]),

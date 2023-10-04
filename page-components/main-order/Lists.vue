@@ -9,7 +9,7 @@
                 <div class="mb-2 float-right">
                     <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md">Reset Column Settings</button>
                     <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md">Reset Column Order</button>
-                    <Print />
+                    <Print/>
                 </div>
                 <table class="w-100 table-auto">
                     <thead>
@@ -55,7 +55,8 @@
                                 Total
                             </th>
 
-                            <th 
+                            <th
+                                v-if="$auth.user.role_id == 1" 
                                 scope="col"
                                 class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
                             ></th>
@@ -89,8 +90,8 @@
                                 <span class="--text-dark text-xs block max-w-xs">{{ entry.sold }}</span>
                             </td>
 
-                            <td class="px-6 py-4 text-sm font-medium text-right  flex items-center justify-end">
-                                <nuxt-link v-if="entry.editable" :to="`/order?uid=${entry.uid}`" 
+                            <td v-if="$auth.user.role_id == 1" class="px-6 py-4 text-sm font-medium text-right  flex items-center justify-end">
+                                <nuxt-link :to="`/order?uid=${entry.order_id}`" 
                                 class="ml-2 mt-2 --text-primary --text-primary-hover" :title="appdefaults.edit" v-tooltip="appdefaults.edit">
                                     <icon-edit />
                                 </nuxt-link>
@@ -162,10 +163,19 @@ export default {
         AlertConfirm,
         Print
     },
+    data() {
+        return {
+            entries: [],
+        }
+    },
     computed: {
         ...mapState({
             state: state => state.order.order.state
         }),
+    },
+    mounted() {
+        localStorage.setItem('order-entry', JSON.stringify(this.state.entry))
+        console.log(['this.$nuxt.appIsAdmin()', this.$auth.$state.user.role_id])
     },
     methods: {
         ...mapMutations('order/order', [
@@ -178,6 +188,7 @@ export default {
         paginate(data) {
             this.setState({ entry: { ...this.state.entry, filter: { ...this.state.entry.filter, page: data.page } } });
             this.setState({ entry: { ...this.state.entry, filter: { ...this.state.entry.filter, limit: data.limit } } });
+            localStorage.setItem('order-entry', JSON.stringify(this.state.entry))
             this.fetchEntry();
         }
     }

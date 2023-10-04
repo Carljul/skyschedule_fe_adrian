@@ -3,7 +3,7 @@
         <div>
             <client-only>
                 <t-select-status 
-                :value="{status:state.entry.filter.status}"
+                :value="{query:state.entry.filter.query}"
                 class="mt-3" 
                 @input="e => {
                     setState({ entry: { ...state.entry, filter: { ...state.entry.filter, ...e } } });
@@ -27,14 +27,14 @@ export default {
     },
     computed: {
         ...mapState({
-            state: state => state.order.order_by_status.state
+            state: state => state.order.order.state
         }),
     },
     methods: {
-        ...mapMutations('order/order_by_status', [
+        ...mapMutations('order/order', [
             'setState'
         ]),
-        ...mapActions('order/order_by_status', [
+        ...mapActions('order/order', [
             'fetchEntry'
         ])
     }

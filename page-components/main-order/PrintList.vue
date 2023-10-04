@@ -6,7 +6,7 @@
                 <p>Preparing Data</p>
             </div>
         </div>
-        <iframe :src="print" class="printFrame"></iframe>
+        <iframe v-if="!state.entry.loading && printLink != null" :src="printLink" class="printFrame"></iframe>
     </div>
 </template>
 <script>
@@ -16,6 +16,11 @@ import { mapState, mapMutations, mapActions } from "vuex"
 
 export default {
     name: 'MainOrderLists',
+    data() {
+        return {
+            printLink: ''
+        };
+    },
     components: {
         Loader,
     },
@@ -31,14 +36,26 @@ export default {
             'setToPrint'
         ]),
         ...mapActions('order/order', [
-            'fetchEntry',
-            'removeEntry',
             'fetchToPrint'
         ]),
+        alert(message) {
+            alert(message);
+        }
+    },
+    watch: {
+        print: function(newdata, olddata) {
+            console.log(['newdata', newdata])
+            this.printLink = newdata;
+        }
     },
     async created() {
         await this.fetchToPrint();
-    }
+        this.printLink = this.print
+        if (this.print == null) {
+            this.alert('File is too large');
+            window.close();
+        }
+    },
 }
 </script>
 <style scoped>

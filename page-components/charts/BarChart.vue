@@ -16,21 +16,24 @@
         :plugins="plugins"
         :css-classes="cssClasses"
         :styles="styles"
+        :tooltip="false"
+        ref="barChart"
       />
     </div>
-    <div v-html="extraHTML"></div>
+    <div class="p-relative chartAddon" v-html="extraHTML"></div>
   </div>
 </template>
 <script>
 import { Bar } from "vue-chartjs";
-import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
-import 'chartjs-plugin-datalabels';
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, Filler } from 'chart.js';
+import ChartJSPluginDatalabels from 'chartjs-plugin-datalabels'
+ChartJS.register(Title, Tooltip, Legend, ChartJSPluginDatalabels, BarElement, CategoryScale, LinearScale, Filler)
 
 export default {
   name: "BarChartComponent",
   components: {
-    Bar
+    Bar,
+    ChartJSPluginDatalabels
   },
   props: {
     data: {

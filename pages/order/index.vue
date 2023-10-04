@@ -62,6 +62,7 @@ export default {
         }
     },
     async created() {
+        localStorage.removeItem('order-entry');
         await this.assignPage('Orders')
     },
     async mounted() {

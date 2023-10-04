@@ -21,47 +21,47 @@ export default {
             return [
                 {
                     label: 'All',
-                    value: {status:1}
+                    value: {query:''}
                 },
                 {
                     label: 'Complete',
-                    value: {status:'complete'}
+                    value: {query:'complete'}
                 },
                 {
                     label: 'Held',
-                    value: {status:'held'}
+                    value: {query:'held'}
                 },
                 {
                     label: 'Loading Dock',
-                    value: {status:'loading_dock'}
+                    value: {query:'loading_dock'}
                 },
                 {
                     label: 'Outputting',
-                    value: {status:'outputting'}
+                    value: {query:'outputting'}
                 },
                 {
                     label: 'Packaging',
-                    value: {status:'packaging'}
+                    value: {query:'packaging'}
                 },
                 {
                     label: 'Printing',
-                    value: {status:'printing'}
+                    value: {query:'printing'}
                 },
                 {
                     label: 'Proofing',
-                    value: {status:'proofing'}
+                    value: {query:'proofing'}
                 },
                 {
                     label: 'Screening',
-                    value: {status:'screening'}
+                    value: {query:'screening'}
                 },
                 {
                     label: 'Shipping',
-                    value: {status:'shipping'}
+                    value: {query:'shipping'}
                 },
                 {
                     label: 'Woa',
-                    value: {status:'woa'}
+                    value: {query:'woa'}
                 },
 
             ];

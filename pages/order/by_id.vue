@@ -9,7 +9,7 @@
             />
         </div>
 
-        <page-filter />
+        <!-- <page-filter /> -->
 
         <page-lists />
 
@@ -42,7 +42,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions('order/order_by_id', [
+        ...mapActions('order/order', [
             'fetchEntry',
             'fetchByUID'
         ]),

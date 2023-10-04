@@ -10,10 +10,11 @@
         </div>
 
         <page-search />
-
+        <page-form />
+        <edit-form />
         <page-lists />
 
-        <page-form />
+        
 
     </div>
 </template>
@@ -23,7 +24,7 @@ import PageFilter from "@page_components/main-role/Filter.vue";
 import PageSearch from "@page_components/main-role/Search.vue";
 import PageLists from "@page_components/main-role/Lists.vue";
 import PageForm from "@page_components/main-role/Form.vue";
-
+import EditForm from "@page_components/main-role/Edit.vue";
 import { mapActions } from "vuex";
 
 export default {
@@ -36,7 +37,8 @@ export default {
         PageLists,
         Breadcrumbs,
         PageSearch,
-        PageForm
+        PageForm,
+        EditForm
     },
     head() {
         return {
@@ -46,23 +48,18 @@ export default {
     methods: {
         ...mapActions('main/role', [
             'fetchEntry',
-            'fetchByUID'
+            'fetchByID'
         ]),
-        ...mapActions('global', [
-            'assignPage',
-        ]),
-    },
-    async created() {
-        await this.assignPage('Roles')
     },
     watch: {
         $route: async function(to, from) {
-            if(to.query.uid) {
+            if(to.query.id) {
                 this.nuxtload();
-                await this.fetchByUID(to.query.uid);
+                await this.fetchByID(to.query.id)
                 this.nuxtunload();
-            } else {
-                this.findPageComponent('MainRoleForm').$refs.adjustmentmodal.open=false;
+            } else {                
+                this.findPageComponent('RoleIndexEdit').$refs.modal_editentry.open=false;
+
             }
         }
     },
@@ -70,9 +67,9 @@ export default {
         
         this.fetchEntry();
 
-        if(this.$route.query.uid) {
+        if(this.$route.query.id) {
             this.nuxtload();
-            await this.fetchByUID(this.$route.query.uid);
+            await this.fetchByID(this.$route.query.id);
             this.nuxtunload();
         }
     }
