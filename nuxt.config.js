@@ -79,7 +79,7 @@ export default {
     '@nuxtjs/auth-next',
     '@nuxtjs/moment'
   ],
-
+  ssr: false,
   // moment js config
   moment: {
     timezone: true

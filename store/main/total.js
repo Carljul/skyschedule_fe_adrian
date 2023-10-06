@@ -67,7 +67,8 @@ export const state = () => ({
             endDate: null
         }
     },
-    print: null
+    print: null,
+    statuses: {}
 });
 
 // mutations
@@ -95,6 +96,9 @@ export const mutations = {
     },
     setToPrint(state, data) {
         state.print = data
+    },
+    setStatuses(state, data) {
+        state.statuses = data
     }
 }
 
@@ -273,6 +277,39 @@ export const actions = {
                 } 
             });
             throw $e;
+        }
+    },
+
+    async fetchStatuses({state, commit}) {
+        if(state.state.entry.loading) { return; }
+
+        try {
+            commit('setState', { 
+                entry: { 
+                    ...state.state.entry, 
+                    loading: true 
+                } 
+            });
+
+            const res = await this.$axios.get(`/item_status`);
+            console.log('Statutes',res.data.data)
+            commit('setStatuses', res.data.data);
+            commit('setState', { 
+                entry: { 
+                    ...state.state.entry, 
+                    loading: false 
+                } 
+            });
+
+        } catch($e) {
+
+            commit('setState', { 
+                entry: { 
+                    ...state.state.entry, 
+                    loading: false 
+                } 
+            });
+
         }
     }
 };

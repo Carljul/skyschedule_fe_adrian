@@ -7,15 +7,14 @@
             </div>
         </div>
         <div class="columns-1">
-            <div class="bar-container">
-                <BarChart
-                    title="Orders"
-                    :options="chartOptions"
-                    :data="barChartData"
-                    :isWithFilter="false"
-                    :extraHTML="weeklyTotalsFraction"
-                    refs="barChartComponent"
-                />                
+            <div class="chart-container bg-violet-400">
+                <div class="title bg-violet-400">
+                    <h4>Orders Process</h4>
+                </div>
+                <div class="chart">
+                    <div class="chart-orders-totals" id="daily-chart" style="height: 300px;"></div>
+                    <div class="chart-orders-totals" id="weekly-chart" style="height: 100px;"></div>
+                </div>
             </div>
         </div>
         <div class="grid grid-cols-2 gap-4 mt-10">
@@ -243,6 +242,9 @@ import BarChart from "../charts/BarChart.vue"
 import { mapState, mapMutations, mapActions } from "vuex"
 import DatePicker from "@components/reusables/DatePicker.vue";
 import Print from "@page_components/main-total/Print.vue";
+import AmCharts from 'amcharts3';
+import AmSerial from 'amcharts3/amcharts/serial';
+import Light from 'amcharts3/amcharts/themes/light';
 
 export default {
     name: 'MainOrderLists',
@@ -258,35 +260,18 @@ export default {
     },
     data() {
         return {
-            weeklyTotalsFraction: '',
-            chartOptions: {
-                responsive: true,
-                maintainAspectRatio: true,
-                indexAxis: "y",
-                tooltip: false,
-                scales: {
-                    x: {
-                        display: false,
-                        stacked: true,
-                        width: 500
-                    },
-                    y: {
-                        stacked: true,
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'right',
-                        onClick: this.handleLegendClick
-                    },
-                },
-            },
             dateData: new Date(),
             barChartData: {},
-            defaultActiveBarChart: ['Complete', 'Printing'],
-            excludedFields: ['ship_date_id'],
+            chartDaily: null,
+            chartWeekly: null,
+            statusColors: {}
         };
+    },
+    async created() {
+        await this.statusesList()
+    },
+    mounted() {
+        this.initCharts()
     },
     computed: {
         ...mapState({
@@ -294,6 +279,7 @@ export default {
             daily: state => state.main.total.daily,
             weekly: state => state.main.total.weekly,
             totals: state => state.main.total.totals,
+            statuses: state => state.main.total.statuses,
         }),
     },
     watch: {
@@ -325,7 +311,8 @@ export default {
         ...mapActions('main/total', [
             'fetchEntry',
             'filterSpecificDate',
-            'filterTotalStatuses'
+            'filterTotalStatuses',
+            'fetchStatuses'
         ]),
         async paginateDaily(data) {
             var parsedDate = new Date(this.dateData)
@@ -366,7 +353,7 @@ export default {
                 }
             });
             await this.filterTotalStatuses()
-            this.barChartData = this.prepareGraphData()
+            this.initialize()
         },
         getWeekDates(date) {
             const fixedDate = new Date(date)
@@ -390,367 +377,217 @@ export default {
                 end: endDateString
             }
         },
-        generateStatusColor(status) {
-            switch (status) {
-                case 'Held':
-                case 'held':
-                    return '#babebd';
-                case 'Proofing':
-                case 'proofing':
-                    return '#ff7631';
-                case 'Woa':
-                case 'woa':
-                    return '#f9ed31';
-                case 'Outputting':
-                case 'outputting':
-                    return '#73f93c';
-                case 'Screening':
-                case 'screening':
-                    return '#46f5d8';
-                case 'Printing':
-                case 'printing':
-                    return '#3661fa';
-                case 'Packaging':
-                case 'packaging':
-                    return '#9438fb';
-                case 'Shipping':
-                case 'shipping':
-                    return '#ff32ff';
-                case 'Loading dock':
-                case 'loading_dock':
-                    return '#9c7534';
-                case 'Complete':
-                case 'complete':
-                    return '#949494';
-                default:
-                    return '#FF0000';
-            }
-        },
-        capitalizeFirstLetter(str) {
-            // Check if the input string is not empty
-            if (str.length === 0) {
-                return str;
-            }
-
-            // Capitalize the first letter and concatenate it with the rest of the string
-            return str.charAt(0).toUpperCase() + str.slice(1);
-        },
-        calculatePercentage(numerator, denominator) {
-            if (denominator === 0) {
-                return ;
-            }
-            const percentage = (numerator / denominator) * 100;
-            return percentage.toFixed(2) + "%";
-        },
-        classFormatter(name, prefix = 'status-') {
-            return prefix + name.toLowerCase().replace(/ /g, '-');
-        },
-        toggleShowHide(className) {
-            const elements = document.querySelectorAll(`.${className}`);
-            elements.forEach((element) => {
-                element.classList.toggle('show');
-                element.classList.toggle('hide');
-            });
-        },
-        // Calculate the sum of all fields excluding values from excludedFields
-        sumUpAllFields(result) {
-            var total = 0
-            for (const field in result) {
-                if (!this.excludedFields.includes(field)) {
-                    total += parseFloat(result[field]);
-                }
-            }
-            return total
-        },
-        // Calculate and update percentages for each field excluding the values from excludedFields
-        calculatePercentageInEachField(result, total) {
-            for (const field in result) {
-                if (!this.excludedFields.includes(field)) {
-                    const percentage = ((parseFloat(result[field]) / total) * 100).toFixed(2);
-                    result[field] = percentage;
-                }
-            }
-            return result;
-        },
-        calculatePercentages(statusTotals) {
-            var complete = [];
-            var held = [];
-            var loading_dock = [];
-            var outputting = [];
-            var packaging = [];
-            var printing = [];
-            var proofing = [];
-            var screening = [];
-            var shipping = [];
-            var woa = [];
-            var arrayOfAddups = [];
-            
-            statusTotals.forEach(obj=> {
-                var data = obj
-                
-                // Clone the input data object
-                var result = { ...data };
-                
-                let total = this.sumUpAllFields(result);
-                result = this.calculatePercentageInEachField(result, total);
-
-                complete.push(result.complete);
-                held.push(result.held);
-                loading_dock.push(result.loading_dock);
-                outputting.push(result.outputting);
-                packaging.push(result.packaging);
-                printing.push(result.printing);
-                proofing.push(result.proofing);
-                screening.push(result.screening);
-                shipping.push(result.shipping);
-                woa.push(result.woa);
-
-                var date =  new Date(obj.ship_date_id)
-                var options = { month: 'short', day: 'numeric' };
-                var formattedDate = date.toLocaleDateString('en-US', options);
-
-                var addUp = parseFloat(obj.held)
-                    + parseFloat(obj.loading_dock)
-                    + parseFloat(obj.outputting)
-                    + parseFloat(obj.packaging)
-                    + parseFloat(obj.printing)
-                    + parseFloat(obj.proofing)
-                    + parseFloat(obj.screening)
-                    + parseFloat(obj.woa)
-                    + parseFloat(obj.shipping);
-
-                arrayOfAddups.push({
-                    date: formattedDate,
-                    total: addUp
-                });
+        prettyNameOf(uglyName) {
+            let name = uglyName.replace(/_/g, " ");
+            name = name.replace(/(?:^|\s)\w/g, function(match) {
+                return match.toUpperCase();
             });
 
-            return {
-                'arrayOfAddups': arrayOfAddups,
-                'complete': complete,
-                'held': held,
-                'loading_dock': loading_dock,
-                'outputting': outputting,
-                'packaging': packaging,
-                'printing': printing,
-                'proofing': proofing,
-                'screening':screening,
-                'shipping': shipping,
-                'woa': woa,
-            };
+            return name.length <= 3 && name.toLowerCase() !== "pad"
+                ? name.toUpperCase()
+                : name;
         },
-        prepareGraphData() {
-            var data = this.totals;
-            var statusTotals = data.status_totals;
-            var weeklyTotals = data.weekly_totals;
-            var datasets = [];
-            var total = 0;
-            var shipDateIds = [];
-            var exclude = ['ship_date_id'];
-            
-            /// ================ Weekly Totals
-            total = parseFloat(weeklyTotals.held)
-                    + parseFloat(weeklyTotals.loading_dock)
-                    + parseFloat(weeklyTotals.outputting)
-                    + parseFloat(weeklyTotals.packaging)
-                    + parseFloat(weeklyTotals.printing)
-                    + parseFloat(weeklyTotals.proofing)
-                    + parseFloat(weeklyTotals.screening)
-                    + parseFloat(weeklyTotals.woa)
-                    + parseFloat(weeklyTotals.shipping);
+        setContrast(hex) {
+            let rgb = this.hexToRgb(hex);
 
-            var innerFractions = '';
-            // Loop weeklyTotals object and create html for weeklyTotalsFraction div p element
-            Object.keys(weeklyTotals).forEach(key => {
-                var formattedKey = this.capitalizeFirstLetter(key.replace(/_/g, ' '));
-                if (key != 'ship_date_id' && key != 'complete' && key != 'printing') {
-                    innerFractions += `<div class="hide ${this.classFormatter(formattedKey, 'weekly-')} custom-tooltip-container" data-tooltip-target="${this.classFormatter(key, 'weekly-')}" style="background-color: ${this.generateStatusColor(key)}; flex-basis: ${this.calculatePercentage(weeklyTotals[key], weeklyTotals.complete)};">
-                        <p>${weeklyTotals[key]} / ${weeklyTotals.complete}</p>
-                        <div id="${this.classFormatter(formattedKey, 'weekly-')}" role="tooltip" class="custom-tooltip">
-                            ${weeklyTotals[key]} / ${weeklyTotals.complete}
-                            <div class="tooltip-arrow"></div>
-                        </div>
-                    </div>`;
-                } else if (key == 'complete' || key == 'printing') {
-                    innerFractions += `<div class="show ${this.classFormatter(formattedKey, 'weekly-')} custom-tooltip-container" style="background-color: ${this.generateStatusColor(key)}; flex-basis: ${this.calculatePercentage(weeklyTotals[key], weeklyTotals.complete)};">
-                        <p>` +(total + '/' + weeklyTotals.complete)+ `</p>
-                        <div id="${this.classFormatter(formattedKey, 'weekly-')}" role="tooltip" class="custom-tooltip">
-                            ${total} / ${weeklyTotals.complete}
-                            <div class="tooltip-arrow"></div>
-                        </div>
-                    </div>`;
-                }
-            });
-            
-            this.weeklyTotalsFraction = `
-                <h6>Weekly Totals</h6><div class='weekly-totals'>
-                ` + innerFractions + `
-            </div>`;
+            // http://www.w3.org/TR/AERT#color-contrast
+            let brightness = Math.round(
+                (parseInt(rgb.r) * 299 + parseInt(rgb.g) * 587 + parseInt(rgb.b) * 114) /
+                1000
+            );
 
-            /// ================ Graph
-            // Legends
-            var labels = Object.keys(weeklyTotals)
-                .filter(key => !exclude.includes(key))
-                .map(key => this.capitalizeFirstLetter(key.replace(/_/g, ' ')))
-            
-            // Datasets
-            shipDateIds = statusTotals.map(obj => {
-                var date =  new Date(obj.ship_date_id)
-
-                // Define the options for formatting
-                var options = { month: 'short', day: 'numeric' };
-
-                // Format the date with the short month and day
-                var formattedDate = date.toLocaleDateString('en-US', options);
-                
-                return formattedDate
+            return brightness > 125 ? "000000" : "ffffff";
+        },
+        // Convert a HEX string to an RGB object containing integers of 0-255 for each component.
+        hexToRgb(hex) {
+            // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+            let shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+            hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+                return r + r + g + g + b + b;
             });
 
-            var result = this.calculatePercentages(statusTotals)
-
-            labels.forEach(item => {
-                var arrayToPush = [];
-                switch(item) {
-                    case 'Complete':
-                        arrayToPush = result.complete;
-                        break;
-                    case 'Held':
-                        arrayToPush = result.held;
-                        break;
-                    case 'Loading dock':
-                        arrayToPush = result.loading_dock;
-                        break;
-                    case 'Outputting':
-                        arrayToPush = result.outputting;
-                        break;
-                    case 'Packaging':
-                        arrayToPush = result.packaging;
-                        break;
-                    case 'Printing':
-                        arrayToPush = result.printing;
-                        break;
-                    case 'Proofing':
-                        arrayToPush = result.proofing;
-                        break;
-                    case 'Screening':
-                        arrayToPush = result.screening;
-                        break;
-                    case 'Shipping':
-                        arrayToPush = result.shipping;
-                        break;
-                    case 'Woa':
-                        arrayToPush = result.woa;
-                        break;
+            let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result
+                ? {
+                    r: parseInt(result[1], 16),
+                    g: parseInt(result[2], 16),
+                    b: parseInt(result[3], 16)
                 }
-
-                datasets.push({
-                    label: item,
-                    data: arrayToPush,
-                    hidden: !this.defaultActiveBarChart.includes(item) ? true : false,
-                    backgroundColor: this.generateStatusColor(item),
-                    addUps: result.arrayOfAddups,
-                    datalabels: {
-                        color: 'white',
-                        align: 'center',
-                        clamp: true,
-                        font: {
-                            weight: 'bold',
-                            size: 16,
-                        },
-                        formatter: function(value, context) {
-                            var addUps = context.dataset.addUps;
-                            var statusExtracted = statusTotals[context.dataIndex];
-                            var complete = statusExtracted.complete;
-                            
-                            switch (item) {
-                                case 'Complete':
-                                    return addUps[context.dataIndex].total + ' / ' + complete;
-                                case 'Held':
-                                    return statusExtracted.held + ' / ' + complete;
-                                case 'Loading dock':
-                                    return statusExtracted.loading_dock + ' / ' + complete;
-                                    break;
-                                case 'Outputting':
-                                    return statusExtracted.outputting + ' / ' + complete;
-                                    break;
-                                case 'Packaging':
-                                    return statusExtracted.packaging + ' / ' + complete;
-                                    break;
-                                case 'Printing':
-                                    return statusExtracted.printing + ' / ' + complete;
-                                case 'Proofing':
-                                    return statusExtracted.proofing + ' / ' + complete;
-                                case 'Screening':
-                                    return statusExtracted.screening + ' / ' + complete;
-                                case 'Shipping':
-                                    return statusExtracted.shipping + ' / ' + complete;
-                                case 'Woa':
-                                    return statusExtracted.woa + ' / ' + complete;
-                            }
+                : null;
+        },
+        async statusesList() {
+            await this.fetchStatuses()
+            this.statuses.forEach((value, index, array) => {
+                this.statusColors[value.id + '_bg'] = value.color;
+                this.statusColors[value.id + '_fg'] = this.setContrast(value.color);
+            });
+        },
+        addGraphs(chart, record) {
+            console.log(['chart', chart]);
+            if (chart.graphs.length <= 0) {
+                for (let field in record) {
+                    if (record.hasOwnProperty(field)) {
+                        if (!/ship_date/.test(field)) {
+                            chart.addGraph({
+                                balloonText: '<b class="font-weight-bold">[[title]]: [[value]]</b>',
+                                fillAlphas: 0.8,
+                                labelText: '[[value]]',
+                                lineAlpha: 0.3,
+                                title: this.prettyNameOf(field),
+                                type: 'column',
+                                color: '#' + this.statusColors[field + '_fg'],
+                                fillColors: '#' + this.statusColors[field + '_bg'],
+                                valueField: field,
+                                labelFunction: function (item) {
+                                    // console.log(item);
+                                    let total = 0;
+                                    for (let i = 0; i < chart.dataProvider.length; i++) {
+                                        // console.log(chart.dataProvider[i]);
+                                        total += chart.dataProvider[i][item.graph.valueField];
+                                    }
+                                    return item.values.value + ' / ' + item.values.total;
+                                },
+                            });
                         }
-                    },
-                })
+                    }
+                }
+            }
+        },
+        initCharts() {
+            this.chartDaily = window.AmCharts.makeChart('daily-chart', {
+                type: 'serial',
+                theme: Light,
+                legend: {
+                    horizontalGap: 10,
+                    maxColumns: 1,
+                    position: 'right',
+                    useGraphSettings: true,
+                    markerSize: 10,
+                    // autoMargins: false,
+                    // marginBottom: 100,
+                },
+                dataDateFormat: 'YYYY-MM-DD',
+                valueAxes: [{
+                    id: 'v1',
+                    stackType: '100%',
+                    axisAlpha: 0.5,
+                    labelsEnabled: false,
+                    // ignoreAxisWidth: true,
+                }],
+                balloon: {
+                    // drop: true,
+                    // adjustBorderColor: false,
+                    // color: '#ffffff',
+                    // borderThickness: 1,
+                    // shadowAlpha: 0,
+                    cornerRadius: 2,
+                    fixedPosition: false,
+                },
+                rotate: true,
+                categoryField: 'ship_date_id',
+                categoryAxis: {
+                    gridPosition: 'start',
+                    axisAlpha: 0,
+                    gridAlpha: 0,
+                    position: 'left',
+                    parseDates: true,
+                    equalSpacing: true,
+                },
+                export: {
+                    enabled: true,
+                },
+                startDuration: 1,
+                responsive: {
+                    enabled: true,
+                    rules: [{
+                        maxWidth: 400,
+                        overrides: {
+                            legend: {
+                                enabled: false,
+                            },
+                        },
+                    }],
+                },
+                fontFamily: 'Montserrat',
+                fontSize: 14,
             });
-
-            return {
-                labels: shipDateIds,
-                datasets: datasets
-            }
+            this.chartWeekly = window.AmCharts.makeChart('weekly-chart', {
+                type: 'serial',
+                theme: 'light',
+    /*
+                legend: {
+                    horizontalGap: 10,
+                    maxColumns: 1,
+                    position: 'right',
+                    useGraphSettings: true,
+                    markerSize: 10,
+                },
+    */
+                valueAxes: [{
+                    id: 'v2',
+                    stackType: '100%',
+                    axisAlpha: 0.5,
+                }],
+                balloon: {
+                    cornerRadius: 2,
+                    fixedPosition: false,
+                },
+                rotate: true,
+                categoryField: 'ship_date_id',
+                categoryAxis: {
+                    gridPosition: 'start',
+                    axisAlpha: 0,
+                    gridAlpha: 0,
+                    position: 'left',
+                    parseDates: false,
+                },
+                export: {
+                    enabled: false,
+                },
+                startDuration: 1,
+                responsive: {
+                    enabled: true,
+                    rules: [{
+                        maxWidth: 400,
+                        overrides: {
+                            legend: {
+                                enabled: false,
+                            },
+                        },
+                    }],
+                },
+                fontFamily: 'Montserrat',
+                fontSize: 18,
+                allLabels: [{
+                    text: 'Weekly Totals',
+                    color: '#fcfcfc',
+                    bold: true,
+                    // alpha: 0.8,
+                    x: 15,
+                    y: 15,
+                }],
+            });
         },
-        calculateAdjustedData(current, next, divideBy) {
-            const adjustedData = [];
-            console.log(next)
-            if (next.length == 0) {
-                current.forEach(item => {
-                    adjustedData.push(100);
-                });
-
-                return adjustedData;
-            }
-            for (let i = 0; i < current.length; i++) {
-                const currentValue = parseFloat(current[i]);
-                const nextValue = parseFloat(next[i]);
-
-                const currentRemaining = 100 - currentValue;
-                const nextValueRemaining = 100 - nextValue;
-                const finalRemaining = currentRemaining + nextValueRemaining;
-                const leftFor = finalRemaining - 100;
-                const adjustment = leftFor / divideBy;
-                
-                // console.log(['currentValue', currentValue])
-                // console.log(['nextValue', nextValue])
-                // console.log(['currentRemaining', currentRemaining])
-                // console.log(['nextValueRemaining', nextValueRemaining])
-                // console.log(['finalRemaining', finalRemaining])
-                // console.log(['leftFor', leftFor])
-                // console.log(['adjustment', adjustment])
-                // console.log(['currentValue + adjustment', currentValue + adjustment])
-
-                adjustedData.push((currentValue + adjustment).toFixed(2));
-                // console.log(['================================== adjustedData for '+ currentValue, adjustedData])
-            }
-
-            return adjustedData;
-        },
-        handleLegendClick(chart, legendItem, __) {
-            // Find the dataset corresponding to the legend item
-            const datasetIndex = legendItem.datasetIndex;
-            const dataset = this.barChartData.datasets[datasetIndex];
-
-            // Toggle the 'hidden' property to hide or show the dataset
-            dataset.hidden = !dataset.hidden;
-            this.toggleShowHide(this.classFormatter(legendItem.text, 'weekly-'))
-            console.log(chart)
-
-            // // Updating bar chart every tap of legends
-            // // Use the filter method to create an array of objects with hidden: false
-            const hiddenObjects = this.barChartData.datasets.filter((dataset) => !dataset.hidden);
-            const activeObjects = this.barChartData.datasets
-                .filter((dataset) => !dataset.hidden)
-                .map(item => item.label);
-            
-            this.defaultActiveBarChart = activeObjects;
-        },
+        async initialize() {
+            // Update the charts using the returned JSON object.
+            var data = this.totals;
+            console.log(['data', data])
+            this.addGraphs(this.chartDaily, data.status_totals[0]);
+            this.addGraphs(this.chartWeekly, data.weekly_totals);
+            this.chartDaily.dataProvider = data.status_totals;
+            this.chartDaily.validateData();
+            this.chartWeekly.dataProvider = [data.weekly_totals];
+            this.chartWeekly.validateData();
+        }
     }
 }
 </script>
+
+<style scoped>
+@import 'node_modules/amcharts3/images/style.css';
+.font-weight-bold{font-weight:700!important}
+#daily-chart {
+  margin-bottom: 4rem;
+  font-family: Poppins, sans-serif;
+}
+</style>

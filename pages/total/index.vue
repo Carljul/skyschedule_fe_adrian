@@ -9,7 +9,6 @@
         </div>
 
         <page-lists ref="listAndGraph" />
-
     </div>
 </template>
 <script>
@@ -95,8 +94,6 @@ export default {
 
         // For Graph
         await this.fetchTotals();
-
-        this.$refs.listAndGraph.generateGraph();
 
         if(this.$route.query.uid) {
             this.nuxtload();
