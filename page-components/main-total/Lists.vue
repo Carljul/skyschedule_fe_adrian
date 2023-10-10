@@ -29,7 +29,7 @@
                         <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md">Reset Column Order</button>
                         <Print />
                     </div>
-    
+
                     <table class="w-100 table-auto">
                         <thead>
                             <tr>
@@ -39,28 +39,28 @@
                                 >
                                     Print Type
                                 </th>
-    
+
                                 <th
                                     scope="col"
                                     class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
                                 >
                                     Max. Avail.
                                 </th>
-    
+
                                 <th
                                     scope="col"
                                     class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
                                 >
                                     Sold
                                 </th>
-    
+
                                 <th
                                     scope="col"
                                     class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
                                 >
                                     Printed
                                 </th>
-    
+
                                 <th
                                     scope="col"
                                     class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
@@ -88,11 +88,11 @@
                                 <td class="px-6 py-2">
                                     <span class="--text-dark text-sm">{{ entry.sold }}</span>
                                 </td>
-    
+
                                 <td class="px-6 py-2">
                                     <span class="--text-dark text-xs block max-w-xs">{{ entry.completed }}</span>
                                 </td>
-    
+
                                 <td class="px-6 py-2">
                                     <span class="--text-dark text-xs block max-w-xs">{{ entry.sold - entry.completed }}</span>
                                 </td>
@@ -102,23 +102,23 @@
                             </tr>
                         </tbody>
                     </table>
-    
+
                     <div v-if="daily.entry.loading" class="flex justify-center align-center mt-10 mb-10">
                         <div class="text-center">
                             <loader class="primary m-auto" style="display:block;" />
                             <span class="text-xs --text-dark font-semibold">Loading</span>
                         </div>
                     </div>
-    
+
                     <p class="text-center ml-1 text-xs font-medium --text-dark mt-5" v-if="!daily.entry.loading && !daily.entry.data.length">
                         There is no data here.
                     </p>
-                    
+
                     <client-only>
-                        <page 
-                            @paginate="paginateDaily" 
-                            :page="daily.entry.filter.page" 
-                            :total="daily.entry.pagination.total" 
+                        <page
+                            @paginate="paginateDaily"
+                            :page="daily.entry.filter.page"
+                            :total="daily.entry.pagination.total"
                             :total-pages="daily.entry.pagination.total_pages"
                         />
                     </client-only>
@@ -134,7 +134,7 @@
                         <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md">Reset Column Order</button>
                         <Print/>
                   </div>
-                  
+
                   <table class="w-100 table-auto">
                     <thead>
                         <tr>
@@ -144,28 +144,28 @@
                             >
                                 Print Type
                             </th>
-  
+
                             <th
                                 scope="col"
                                 class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
                             >
                                 Max. Avail.
                             </th>
-  
+
                             <th
                                 scope="col"
                                 class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
                             >
                                 Sold
                             </th>
-  
+
                             <th
                                 scope="col"
                                 class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
                             >
                                 Printed
                             </th>
-  
+
                             <th
                                 scope="col"
                                 class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
@@ -193,11 +193,11 @@
                             <td class="px-6 py-2">
                                 <span class="--text-dark text-sm">{{ entry.sold }}</span>
                             </td>
-  
+
                             <td class="px-6 py-2">
                                 <span class="--text-dark text-xs block max-w-xs">{{ entry.completed }}</span>
                             </td>
-  
+
                             <td class="px-6 py-2">
                                 <span class="--text-dark text-xs block max-w-xs">{{ entry.sold - entry.completed }}</span>
                             </td>
@@ -207,7 +207,7 @@
                         </tr>
                     </tbody>
                 </table>
-  
+
                 <div v-if="weekly.entry.loading" class="flex justify-center align-center mt-10 mb-10">
                     <div class="text-center">
                         <loader class="primary m-auto" style="display:block;" />
@@ -220,10 +220,10 @@
                 </p>
 
                 <client-only>
-                    <page 
-                        @paginate="paginateWeekly" 
-                        :page="weekly.entry.filter.page" 
-                        :total="weekly.entry.pagination.total" 
+                    <page
+                        @paginate="paginateWeekly"
+                        :page="weekly.entry.filter.page"
+                        :total="weekly.entry.pagination.total"
                         :total-pages="weekly.entry.pagination.total_pages"
                     />
                 </client-only>
@@ -423,7 +423,6 @@ export default {
             });
         },
         addGraphs(chart, record) {
-            console.log(['chart', chart]);
             if (chart.graphs.length <= 0) {
                 for (let field in record) {
                     if (record.hasOwnProperty(field)) {
