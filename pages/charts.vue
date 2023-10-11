@@ -41,7 +41,7 @@
             </div>
           </div>
           <div class="chart">
-            <div id="impressions-by-print-type-chart" style="width: 500px; height: 400px;"></div>
+            <div id="impressions-by-print-type-chart" style="height: 400px;"></div>
           </div>
         </div>
       </div>
@@ -68,7 +68,7 @@
         <div class="chart-container bg-violet-400">
           <div class="title bg-violet-400">
             <h4>Total Number of Print Types by Date</h4>
-            <DatePicker v-model="dateData"/>
+            <DateRangePicker v-model="dateData"/>
           </div>
           <div class="chart">
             <div id="print-types-by-date-chart" style="height: 600px;"></div>
@@ -81,7 +81,7 @@
 import Breadcrumbs from "@components/reusables/Breadcrumbs.vue";
 import Loader from "@components/reusables/Loader.vue";
 import { mapState, mapActions, mapMutations } from "vuex";
-import DatePicker from "@components/reusables/DatePicker.vue";
+import DateRangePicker from "@components/reusables/DateRangePicker.vue";
 import TSelectDynamic from "@components/reusables/SelectDynamic.vue";
 import AmCharts from 'amcharts3';
 import AmSerial from 'amcharts3/amcharts/serial';
@@ -100,7 +100,7 @@ export default {
   },
   components: {
     TSelectDynamic,
-    DatePicker,
+    DateRangePicker,
     Loader,
     Breadcrumbs
   },
@@ -131,9 +131,12 @@ export default {
       this.impressionsChart.validateData();
     },
     dateData: function(newdata, olddata) {
-      var parsedDate = new Date(newdata)
-      var formattedDate = parsedDate.getFullYear() + '-' + this.reformatSingleDigits((parsedDate.getMonth() + 1)) + '-' + this.reformatSingleDigits(parsedDate.getDate())
-      this.setState({ entry: { ...this.state.entry, filter: { ...this.state.entry.filter, startDate: formattedDate, endDate: formattedDate } } });
+      console.log(newdata)
+      var parsedStartDate = new Date(newdata.start)
+      var parsedEndDate = new Date(newdata.end)
+      var formattedStartDate = parsedStartDate.getFullYear() + '-' + this.reformatSingleDigits((parsedStartDate.getMonth() + 1)) + '-' + this.reformatSingleDigits(parsedStartDate.getDate())
+      var formattedEndDate = parsedEndDate.getFullYear() + '-' + this.reformatSingleDigits((parsedEndDate.getMonth() + 1)) + '-' + this.reformatSingleDigits(parsedEndDate.getDate())
+      this.setState({ entry: { ...this.state.entry, filter: { ...this.state.entry.filter, startDate: formattedStartDate, endDate: formattedEndDate } } });
       this.prepareCharts();
     }
   },
