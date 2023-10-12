@@ -272,6 +272,7 @@ export default {
     },
     mounted() {
         this.initCharts()
+        this.generateGraph()
     },
     computed: {
         ...mapState({
@@ -570,7 +571,6 @@ export default {
         async initialize() {
             // Update the charts using the returned JSON object.
             var data = this.totals;
-            console.log(['data', data])
             this.addGraphs(this.chartDaily, data.status_totals[0]);
             this.addGraphs(this.chartWeekly, data.weekly_totals);
             this.chartDaily.dataProvider = data.status_totals;

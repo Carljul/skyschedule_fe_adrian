@@ -151,9 +151,6 @@ export default {
     await this.assignPage('Charts')
     await this.prepareCharts();
   },
-  mounted() {
-      this.initCharts();
-  },
   methods: {
     ...mapMutations('chart/chartData', [
         'setState',
@@ -178,6 +175,7 @@ export default {
       this.printTypePieTotals = this.chartData.printTypePieTotals;
       this.printTypes = this.chartData.printTypes;
       this.defaultStatus = this.chartData.defaultStatus;
+      this.initCharts();
     },
     prettyNameOf(uglyName) {
         let name = uglyName.replace(/_/g, " ");
@@ -563,6 +561,8 @@ export default {
         // startDuration: 0.2,
         dataProvider: this.printTypeLineTotals
       });
+      console.log(['chart.dataProvider', chart.dataProvider])
+      console.log(['this.printTypeLineTotals', this.printTypeLineTotals])
 
       chart.addListener("rendered", chart.zoomToIndexes(chart.dataProvider.length - 40, chart.dataProvider.length - 1));
     },
