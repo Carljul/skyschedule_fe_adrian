@@ -242,9 +242,20 @@ import BarChart from "../charts/BarChart.vue"
 import { mapState, mapMutations, mapActions } from "vuex"
 import DatePicker from "@components/reusables/DatePicker.vue";
 import Print from "@page_components/main-total/Print.vue";
-import AmCharts from 'amcharts3';
-import AmSerial from 'amcharts3/amcharts/serial';
-import Light from 'amcharts3/amcharts/themes/light';
+
+WebFont.load({
+  google: {
+    families: [
+      "Poppins:300,400,500,600,700",
+      "Montserrat:300,400,500,600,700",
+      "Roboto:300,400,500,600,700",
+      "Audiowide:400"
+    ]
+  },
+  active: function() {
+    sessionStorage.fonts = true;
+  }
+});
 
 export default {
     name: 'MainOrderLists',
@@ -456,7 +467,7 @@ export default {
         initCharts() {
             this.chartDaily = window.AmCharts.makeChart('daily-chart', {
                 type: 'serial',
-                theme: Light,
+                theme: 'light',
                 legend: {
                     horizontalGap: 10,
                     maxColumns: 1,
@@ -514,19 +525,13 @@ export default {
             this.chartWeekly = window.AmCharts.makeChart('weekly-chart', {
                 type: 'serial',
                 theme: 'light',
-    /*
-                legend: {
-                    horizontalGap: 10,
-                    maxColumns: 1,
-                    position: 'right',
-                    useGraphSettings: true,
-                    markerSize: 10,
-                },
-    */
                 valueAxes: [{
                     id: 'v2',
                     stackType: '100%',
                     axisAlpha: 0.5,
+                    labelsEnabled: false,
+                    gridAlpha: 0,
+                    gridThickness:0
                 }],
                 balloon: {
                     cornerRadius: 2,
@@ -536,10 +541,12 @@ export default {
                 categoryField: 'ship_date_id',
                 categoryAxis: {
                     gridPosition: 'start',
+                    gridThickness: 0,
                     axisAlpha: 0,
                     gridAlpha: 0,
                     position: 'left',
                     parseDates: false,
+                    labelsEnabled: false
                 },
                 export: {
                     enabled: false,
@@ -562,9 +569,8 @@ export default {
                     text: 'Weekly Totals',
                     color: '#fcfcfc',
                     bold: true,
-                    // alpha: 0.8,
-                    x: 15,
-                    y: 15,
+                    x: 25,
+                    y: 30,
                 }],
             });
         },

@@ -23,7 +23,8 @@ const getDefaultState = () => {
                     only_trashed: null,
                 }
             }
-        }
+        },
+        print: null
     }
 };
 
@@ -44,8 +45,11 @@ export const mutations = {
         state.state = {...state.state, inputs: defaultState.state.inputs};
     },
     updateEntryDataResponse(state, payload) {
-        const itemIndex = state.state.entry.data.findIndex(x => x.uid === payload.uid);
-        Vue.set(state.state.entry.data, itemIndex, payload);
+        const itemIndex = state.state.entry.data.findIndex(x => x && x.order_id == payload[0].order_id);
+        Vue.set(state.state.entry.data, itemIndex, payload[0]);
+    },
+    setToPrint(state, data) {
+        state.print = data
     }
 }
 
@@ -63,10 +67,10 @@ export const actions = {
                 } 
             });
 
-            const res = await this.$axios.get(`/orders`, {
+            const res = await this.$axios.get('/orders/fetch/by_id', {
                 params: state.state.entry.filter
             });
-            console.log('DATA',res.data.data)
+            console.log('Order By Id',res.data)
             commit('setState', { 
                 entry: { 
                     ...state.state.entry, 
@@ -75,10 +79,11 @@ export const actions = {
                     loading: false 
                 } 
             });
+
+            console.log(state.state);
             
 
         } catch($e) {
-
             commit('setState', { 
                 entry: { 
                     ...state.state.entry, 
@@ -93,12 +98,17 @@ export const actions = {
         const app = this._vm;
         if(!payload) { return; }
         try {
-            const res = await this.$axios.get(`${app.getOrgUID}/orders/${payload}`);
-            commit('setState', { handle: 'state', key: 'inputs', value: res.data.response });
-            app.$nextTick(() => {
-                app.findPageComponent('MainOrderForm').$refs.adjustmentmodal.open=true;
-            });
-            return res.data.response;
+            const res = await this.$axios.get(`orders/${payload}`);
+            var data = res.data.response;
+            if (data.length > 0) {
+                commit('setState', { handle: 'state', key: 'inputs', value: data[0]});
+                app.$nextTick(() => {
+                    app.findPageComponent('MainOrderForm').$refs.adjustmentmodal.open=true;
+                });
+                return res.data.response;
+            }
+
+            return false;
         } catch($e) {
             return false;
         }
@@ -107,14 +117,16 @@ export const actions = {
     async saveEntry({ state, commit, dispatch }) {
         const app = this._vm;
         try {
+            
+        console.log(['state.state.entry.data', state.state.entry.data])
             let res = null
-            if(state.state.inputs.uid) {
-                res = await this.$axios.put(`/${app.getOrgUID}/orders/${state.state.inputs.uid}`, state.state.inputs);
+            if(state.state.inputs.order_id) {
+                res = await this.$axios.put(`/orders/${state.state.inputs.order_id}`, state.state.inputs);
                 commit('updateEntryDataResponse', res.data.response);
-                app.notify({ title: 'Saved!', html: 'Overtime has been saved.' });
+                app.notify({ title: 'Saved!', html: 'Status has been saved.' });
             } else {
                 res = await this.$axios.post(`/${app.getOrgUID}/orders`, state.state.inputs);
-                app.notify({ title: 'Saved!', html: 'Overtime has been added.' });
+                app.notify({ title: 'Saved!', html: 'Status has been added.' });
                 dispatch('fetchEntry');
             }
         } catch($e) {
@@ -122,13 +134,90 @@ export const actions = {
         }
     },
 
+
+    async updateStatusEntry({ state, commit, dispatch }) {
+        const app = this._vm;
+        try {                
+            let res = null
+            if(state.state.inputs.order_id) {            
+                res = await this.$axios.put(`/orders/single/${state.state.inputs.order_id}`, state.state.inputs);
+                
+                commit('updateEntryDataResponse', res.data.response);
+                app.notify({ title: 'Saved!', html: 'Status has been saved.' });
+            } else {
+                res = await this.$axios.post(`/orders`, state.state.inputs);
+                app.notify({ title: 'Saved!', html: 'Status has been added.' });
+                dispatch('fetchEntry');
+            }
+        } catch($e) {
+            throw $e;
+        }
+    },
+
+
     async removeEntry({ dispatch }, payload) {
+        
         const app = this._vm;
         try {
-            await this.$axios.delete(`${app.getOrgUID}/orders/${payload.uid}`);
+            await this.$axios.delete(`/orders/${payload.order_id}`);
             dispatch('fetchEntry');
         } catch($e) {
             app.errorHandle($e);
+        }
+    },
+
+    async fetchToPrint({state, commit}, payload) {
+        try {
+            commit('setState', { 
+                entry: { 
+                    ...state.state.entry, 
+                    loading: true 
+                } 
+            });
+
+            let entry = localStorage.getItem('order-entry');
+            
+            let filename = new Date().getTime();
+            const res = await this.$axios.get(`/orders/print/report`, {
+              headers: {
+                'Accept': 'application/pdf',
+              },
+              responseType: 'blob', // Set the responseType to 'blob'
+              params: {
+                ...(JSON.parse(entry)).filter,
+                print: true
+              },
+            });
+          
+            const blob = new Blob([res.data], { type: 'application/pdf' });
+          
+            // Create a temporary anchor element to trigger the download
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = filename + '.pdf'; // You can specify the desired filename
+          
+
+            // Do not delete this: This will download as pdf file
+            // Trigger a click event on the anchor element
+            // link.click();
+          
+            // Release the object URL to free up resources
+            // window.URL.revokeObjectURL(link.href);
+            
+            commit('setState', { 
+                entry: { 
+                    ...state.state.entry, 
+                    loading: false 
+                } 
+            });
+            commit('setToPrint', link.href);
+        } catch (e) {
+            commit('setState', { 
+                entry: { 
+                    ...state.state.entry, 
+                    loading: false 
+                } 
+            });
         }
     }
 };

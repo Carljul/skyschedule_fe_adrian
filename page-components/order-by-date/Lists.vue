@@ -13,7 +13,7 @@
                     <Print />
                 </div>
 
-                <table class="w-100 table-auto">
+                <table class="border-collapse w-100 table-auto">
                     <thead>
                         <tr>
                             <th
@@ -69,38 +69,88 @@
                     <tbody v-if="!state.entry.loading" class="bg-white divide-y divide-gray-200">
                         <tr v-for="(entry, entryindex) in state.entry.data" :key="`department-entry-${genKey(entry)}`" class="transition-all hover:bg-gray-100">
                             
-                            <td class="px-6 py-10 ">
-                                <span class="--text-dark text-sm">{{ entry.item_status_id }}</span>
-                            </td>
-                            <td class="px-6 py-10 ">
-                                <span class="--text-dark text-sm">
+                            <td class="border p-2">
+                     
+                     <client-only>
+                         <t-select-dynamic 
+                         :endpoint="`/item_status`" 
+                         datakeylabel="id" 
+                         datakeyvalue="id"
+                         searchplaceholder="Type to Search Status"
+                         placeholder="Choose Status"
+                         :value="entry.item_status_id.toUpperCase()" 
+                         :style="`background-color:#${entry.item_status_color}`"
+                                                       
+                         @input="e => {
+                             setState({
+                                 inputs: {
+                                     // order_id: entry.order_id,
+                                     // Line Items
+                                     line_item_id: entry.line_item_id,
+                                     order_id: entry.order_id,
+                                     product_num: entry.product_num,
+                                     product_detail: entry.product_detail,
+                                     print_type_id: entry.print_type_id,
+                                     num_impressions: entry.num_impressions,
+                                     impressions_tradition: entry.impressions_tradition,
+                                     impressions_hispeed: entry.impressions_hispeed,
+                                     impressions_digital: entry.impressions_digital,
+                                     quantity: entry.quantity,
+                                     thumbnail: entry.thumbnail,
+                                     item_status_id: e,
+
+                                     // Orders
+                                     ship_date_id: entry.ship_date_id,
+                                     customer_name: entry.customer_name,
+                                     proof_spec_date: entry.proof_spec_date,
+                                     printing_company: entry.printing_company,
+                                     rush: entry.rush,
+                                 },
+                             });
+                             updateStatus()
+                             
+                         }"
+                         ></t-select-dynamic>
+                         <input type="hidden" 
+                         :value="state.inputs.id" 
+                         @input="e => {
+                             setState({ handle: 'state.inputs', key: 'id', value: e }); 
+                             validate(e); 
+                         }">
+                         </client-only>
+             
+                         <!-- <span class="text-white text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" :style="`background-color:#${entry.item_status_color}`">{{ entry.item_status_id.toUpperCase() }}</span> -->
+                     </td>
+                            <td class="border p-2">
+                                <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md">
                                     {{ entry.product_num }}
                                 </span>
+                                <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md">
+                                    {{ entry.order_id }} | {{ entry.customer_name }}
+                                </span>
                             </td>
-                            <td class="px-6 py-4 ">
-                                <span class="--text-dark text-sm">{{ entry.product_detail }}</span>
-                            </td>
-
-                            <td class="px-6 py-4 ">
-                                <span class="--text-dark text-xs block max-w-xs">{{ entry.print_method_id }}</span>
-                            </td>
-
-                            <td class="px-6 py-4 ">
-                                <span class="--text-dark text-xs block max-w-xs">{{ entry.quantity }}</span>
-                            </td>
-                            <td class="px-6 py-4 ">
-                                <span class="--text-dark text-xs block max-w-xs">{{ entry.sold }}</span>
+                            <td class="border p-2 ">
+                                <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md">{{ entry.product_detail }}</span>
                             </td>
 
-                            <td v-if="$auth.user.role_id == 1" class="px-6 py-4 text-sm font-medium text-right  flex items-center justify-end">
-                                <nuxt-link :to="`/order/by_date?uid=${entry.order_id}`" 
+                            <td class="border p-2 ">
+                                <span class="text-white text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" :style="`background-color:#${entry.color}`">{{ entry.long_name }}</span>
+                            </td>
+
+                            <td class="border p-2 ">
+                                <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.quantity }}</span>
+                            </td>
+                            <td class="border p-2 ">
+                                <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md">{{ entry.sold }}</span>
+                            </td>
+
+                            <td v-if="$auth.user.role_id == 1" class="border p-2">
+                                <!-- <nuxt-link :to="`/order?uid=${entry.order_id}`" 
                                 class="ml-2 mt-2 --text-primary --text-primary-hover" :title="appdefaults.edit" v-tooltip="appdefaults.edit">
                                     <icon-edit />
-                                </nuxt-link>
+                                </nuxt-link> -->
 
-                                <a 
-                                v-if="entry.editable"
-                                href="#" @click.prevent="() => {
+                                <a href="#" @click.prevent="() => {
                                     $refs.alertconfirm.$alert({
                                         title: appdefaults.trashConfirm.title,
                                         html: appdefaults.trashConfirm.html,
@@ -109,7 +159,7 @@
                                             notify({ title: 'Success!', html: `Order ${appdefaults.trashConfirm.success}` });
                                         }
                                     });
-                                }" class="ml-2 mt-2 --text-primary --text-primary-hover mr-10" :title="appdefaults.trash" v-tooltip="appdefaults.trash">
+                                }" class="ml-2 mt-2 --text-danger --text-danger-hover mr-10" :title="appdefaults.trash" v-tooltip="appdefaults.trash">
                                     <icon-trash />
                                 </a>
                             </td>
@@ -154,7 +204,7 @@ import Print from "@page_components/main-order/Print.vue";
 import DatePickerCustom from "@components/reusables/DatePicker.vue";
 import PageFilter from "@page_components/order-by-date/Filter.vue";
 import { mapState, mapMutations, mapActions } from "vuex"
-
+import TSelectDynamic from "@components/reusables/SelectDynamic.vue";
 import { ref } from 'vue';
 
 export default {
@@ -167,7 +217,8 @@ export default {
         AlertConfirm,
         Print,
         DatePickerCustom,
-        PageFilter
+        PageFilter,
+        TSelectDynamic
     },
     data() {
         return {
@@ -176,17 +227,39 @@ export default {
     },
     computed: {
         ...mapState({
-            state: state => state.order.order.state
+            state: state => state.order.order_by_date.state
         }),
     },
     methods: {
-        ...mapMutations('order/order', [
+        ...mapMutations('order/order_by_date', [
             'setState'
         ]),
-        ...mapActions('order/order', [
+        ...mapActions('order/order_by_date', [
             'fetchEntry',
-            'removeEntry'
+            'removeEntry',
+            'updateStatusEntry'
         ]),
+        async updateStatus() {            
+            if (this.isProcessing) {
+                return;
+            }
+            this.isProcessing = true;
+
+            try {                
+                await this.updateStatusEntry();
+                
+                this.isProcessing = false;
+
+               
+            } catch($e) {
+                console.log($e)
+                this.errorHandle($e, 'adjustment');                
+            }
+            
+            
+            
+
+        },
         paginate(data) {
             this.setState({ entry: { ...this.state.entry, filter: { ...this.state.entry.filter, page: data.page } } });
             this.setState({ entry: { ...this.state.entry, filter: { ...this.state.entry.filter, limit: data.limit } } });

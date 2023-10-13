@@ -8,7 +8,7 @@ const getDefaultState = () => {
     return {
         state: {
             inputs: {
-                name: ''
+                name: '',
             },
             selected: null,
             entry: {
@@ -70,7 +70,8 @@ export const actions = {
             const res = await this.$axios.get('/orders', {
                 params: state.state.entry.filter
             });
-            console.log('DATA',res.data.data)
+            
+            console.log("Orders",res.data.data)
             commit('setState', { 
                 entry: { 
                     ...state.state.entry, 
@@ -118,14 +119,35 @@ export const actions = {
         const app = this._vm;
         try {
             
-        console.log(['state.state.entry.data', state.state.entry.data])
+        // console.log(['state.state.entry.data', state.state.entry.data])
             let res = null
             if(state.state.inputs.order_id) {
                 res = await this.$axios.put(`/orders/${state.state.inputs.order_id}`, state.state.inputs);
+                
                 commit('updateEntryDataResponse', res.data.response);
                 app.notify({ title: 'Saved!', html: 'Status has been saved.' });
             } else {
-                res = await this.$axios.post(`/${app.getOrgUID}/orders`, state.state.inputs);
+                res = await this.$axios.post(`/orders`, state.state.inputs);
+                app.notify({ title: 'Saved!', html: 'Status has been added.' });
+                dispatch('fetchEntry');
+            }
+        } catch($e) {
+            throw $e;
+        }
+    },
+
+
+    async updateStatusEntry({ state, commit, dispatch }) {
+        const app = this._vm;
+        try {                
+            let res = null
+            if(state.state.inputs.order_id) {            
+                res = await this.$axios.put(`/orders/single/${state.state.inputs.order_id}`, state.state.inputs);
+                
+                commit('updateEntryDataResponse', res.data.response);
+                app.notify({ title: 'Saved!', html: 'Status has been saved.' });
+            } else {
+                res = await this.$axios.post(`/orders`, state.state.inputs);
                 app.notify({ title: 'Saved!', html: 'Status has been added.' });
                 dispatch('fetchEntry');
             }
@@ -135,9 +157,10 @@ export const actions = {
     },
 
     async removeEntry({ dispatch }, payload) {
+        
         const app = this._vm;
         try {
-            await this.$axios.delete(`${app.getOrgUID}/orders/${payload.uid}`);
+            await this.$axios.delete(`/orders/${payload.order_id}`);
             dispatch('fetchEntry');
         } catch($e) {
             app.errorHandle($e);

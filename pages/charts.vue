@@ -83,11 +83,19 @@ import Loader from "@components/reusables/Loader.vue";
 import { mapState, mapActions, mapMutations } from "vuex";
 import DateRangePicker from "@components/reusables/DateRangePicker.vue";
 import TSelectDynamic from "@components/reusables/SelectDynamic.vue";
-import AmCharts from 'amcharts3';
-import AmSerial from 'amcharts3/amcharts/serial';
-import AmPieChart from 'amcharts3/amcharts/pie';
-import Light from 'amcharts3/amcharts/themes/light';
-
+WebFont.load({
+  google: {
+    families: [
+      "Poppins:300,400,500,600,700",
+      "Montserrat:300,400,500,600,700",
+      "Roboto:300,400,500,600,700",
+      "Audiowide:400"
+    ]
+  },
+  active: function() {
+    sessionStorage.fonts = true;
+  }
+});
 export default {
   name: "MainChartsPage",
   layout: "main",
