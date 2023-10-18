@@ -45,7 +45,7 @@ export const mutations = {
         state.state = {...state.state, inputs: defaultState.state.inputs};
     },
     updateEntryDataResponse(state, payload) {
-        const itemIndex = state.state.entry.data.findIndex(x => x && x.order_id == payload[0].order_id);
+        const itemIndex = state.state.entry.data.findIndex(x => x && x.id == payload[0].id);
         Vue.set(state.state.entry.data, itemIndex, payload[0]);
     },
     setToPrint(state, data) {
@@ -60,35 +60,35 @@ export const actions = {
         if(state.state.entry.loading) { return; }
 
         try {
-            commit('setState', { 
-                entry: { 
-                    ...state.state.entry, 
-                    loading: true 
-                } 
+            commit('setState', {
+                entry: {
+                    ...state.state.entry,
+                    loading: true
+                }
             });
 
             const res = await this.$axios.get('/orders/fetch/by_status', {
                 params: state.state.entry.filter
             });
             console.log('DATA1',res.data.data)
-            commit('setState', { 
-                entry: { 
-                    ...state.state.entry, 
-                    data: res.data.data, 
-                    pagination: res.data.pagination, 
-                    loading: false 
-                } 
+            commit('setState', {
+                entry: {
+                    ...state.state.entry,
+                    data: res.data.data,
+                    pagination: res.data.pagination,
+                    loading: false
+                }
             });
 
             console.log(state.state);
-            
+
 
         } catch($e) {
-            commit('setState', { 
-                entry: { 
-                    ...state.state.entry, 
-                    loading: false 
-                } 
+            commit('setState', {
+                entry: {
+                    ...state.state.entry,
+                    loading: false
+                }
             });
 
         }
@@ -115,11 +115,11 @@ export const actions = {
     },
     async updateStatusEntry({ state, commit, dispatch }) {
         const app = this._vm;
-        try {                
+        try {
             let res = null
-            if(state.state.inputs.order_id) {            
+            if(state.state.inputs.order_id) {
                 res = await this.$axios.put(`/orders/single/${state.state.inputs.order_id}`, state.state.inputs);
-                
+
                 commit('updateEntryDataResponse', res.data.response);
                 app.notify({ title: 'Saved!', html: 'Status has been saved.' });
             } else {
@@ -131,11 +131,11 @@ export const actions = {
             throw $e;
         }
     },
-    
+
     async saveEntry({ state, commit, dispatch }) {
         const app = this._vm;
         try {
-            
+
         console.log(['state.state.entry.data', state.state.entry.data])
             let res = null
             if(state.state.inputs.order_id) {
@@ -153,10 +153,10 @@ export const actions = {
     },
 
     async removeEntry({ dispatch }, payload) {
-        
+
         const app = this._vm;
         try {
-            await this.$axios.delete(`/orders/${payload.order_id}`);
+            await this.$axios.delete(`/orders/${payload.id}`);
             dispatch('fetchEntry');
         } catch($e) {
             app.errorHandle($e);
@@ -165,15 +165,15 @@ export const actions = {
 
     async fetchToPrint({state, commit}, payload) {
         try {
-            commit('setState', { 
-                entry: { 
-                    ...state.state.entry, 
-                    loading: true 
-                } 
+            commit('setState', {
+                entry: {
+                    ...state.state.entry,
+                    loading: true
+                }
             });
 
             let entry = localStorage.getItem('order-entry');
-            
+
             let filename = new Date().getTime();
             const res = await this.$axios.get(`/orders/print/report`, {
               headers: {
@@ -185,35 +185,35 @@ export const actions = {
                 print: true
               },
             });
-          
+
             const blob = new Blob([res.data], { type: 'application/pdf' });
-          
+
             // Create a temporary anchor element to trigger the download
             const link = document.createElement('a');
             link.href = window.URL.createObjectURL(blob);
             link.download = filename + '.pdf'; // You can specify the desired filename
-          
+
 
             // Do not delete this: This will download as pdf file
             // Trigger a click event on the anchor element
             // link.click();
-          
+
             // Release the object URL to free up resources
             // window.URL.revokeObjectURL(link.href);
-            
-            commit('setState', { 
-                entry: { 
-                    ...state.state.entry, 
-                    loading: false 
-                } 
+
+            commit('setState', {
+                entry: {
+                    ...state.state.entry,
+                    loading: false
+                }
             });
             commit('setToPrint', link.href);
         } catch (e) {
-            commit('setState', { 
-                entry: { 
-                    ...state.state.entry, 
-                    loading: false 
-                } 
+            commit('setState', {
+                entry: {
+                    ...state.state.entry,
+                    loading: false
+                }
             });
         }
     }
