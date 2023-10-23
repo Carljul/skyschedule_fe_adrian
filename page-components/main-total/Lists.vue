@@ -30,7 +30,7 @@
                         <Print />
                     </div>
 
-                    <table class="w-100 table-auto">
+                    <table class="border-collapse w-100 table-auto">
                         <thead>
                             <tr>
                                 <th
@@ -77,28 +77,25 @@
                         </thead>
                         <tbody v-if="!daily.entry.loading" class="bg-white divide-y divide-gray-200">
                             <tr v-for="(entry, entryindex) in daily.entry.data" :key="`print-type-dates-entry-${genKey(entry)}`" class="transition-all hover:bg-gray-100">
-                                <td class="px-6 py-2">
-                                    <span class="--text-dark text-sm">{{ entry.print_type_id }}</span>
-                                </td>
-                                <td class="px-6 py-2">
-                                    <span class="--text-dark text-sm">
-                                        {{ entry.max_avail }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-2">
-                                    <span class="--text-dark text-sm">{{ entry.sold }}</span>
-                                </td>
+                                <td class="border p-2 ">
+                                <span class="text-white text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" :style="`background-color:#${entry.color}`">{{ entry.print_type_id }}</span>
+                            </td>
+                            <td class="border p-2 ">
+                                <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.max_avail }}</span>
+                            </td>
+                            <td class="border p-2 ">
+                                <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.sold }}</span>
+                            </td>
 
-                                <td class="px-6 py-2">
-                                    <span class="--text-dark text-xs block max-w-xs">{{ entry.completed }}</span>
-                                </td>
-
-                                <td class="px-6 py-2">
-                                    <span class="--text-dark text-xs block max-w-xs">{{ entry.sold - entry.completed }}</span>
-                                </td>
-                                <td class="px-6 py-2">
-                                    <span class="--text-dark text-xs block max-w-xs">{{ entry.max_avail - entry.sold }}</span>
-                                </td>
+                            <td class="border p-2 ">
+                                <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.completed }}</span>
+                            </td>
+                            <td class="border p-2 ">
+                                <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.sold - entry.completed }}</span>
+                            </td>
+                            <td class="border p-2 ">
+                                <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.max_avail - entry.sold }}</span>
+                            </td>
                             </tr>
                         </tbody>
                     </table>
@@ -182,27 +179,24 @@
                     </thead>
                     <tbody v-if="!weekly.entry.loading" class="bg-white divide-y divide-gray-200">
                         <tr v-for="(entry, entryindex) in weekly.entry.data" :key="`print-type-weekly-entry-${genKey(entry)}`" class="transition-all hover:bg-gray-100">
-                            <td class="px-6 py-2">
-                                <span class="--text-dark text-sm">{{ entry.print_type_id }}</span>
+                            <td class="border p-2 ">
+                                <span class="text-white text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" :style="`background-color:#${entry.color}`">{{ entry.print_type_id }}</span>
                             </td>
-                            <td class="px-6 py-2">
-                                <span class="--text-dark text-sm">
-                                    {{ entry.max_avail }}
-                                </span>
+                            <td class="border p-2 ">
+                                <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.max_avail }}</span>
                             </td>
-                            <td class="px-6 py-2">
-                                <span class="--text-dark text-sm">{{ entry.sold }}</span>
+                            <td class="border p-2 ">
+                                <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.sold }}</span>
                             </td>
 
-                            <td class="px-6 py-2">
-                                <span class="--text-dark text-xs block max-w-xs">{{ entry.completed }}</span>
+                            <td class="border p-2 ">
+                                <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.completed }}</span>
                             </td>
-
-                            <td class="px-6 py-2">
-                                <span class="--text-dark text-xs block max-w-xs">{{ entry.sold - entry.completed }}</span>
+                            <td class="border p-2 ">
+                                <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.sold - entry.completed }}</span>
                             </td>
-                            <td class="px-6 py-2">
-                                <span class="--text-dark text-xs block max-w-xs">{{ entry.max_avail - entry.sold }}</span>
+                            <td class="border p-2 ">
+                                <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.max_avail - entry.sold }}</span>
                             </td>
                         </tr>
                     </tbody>
@@ -531,7 +525,6 @@ export default {
                     axisAlpha: 0.5,
                     labelsEnabled: false,
                     gridAlpha: 0,
-                    gridThickness:0
                 }],
                 balloon: {
                     cornerRadius: 2,
@@ -541,7 +534,6 @@ export default {
                 categoryField: 'ship_date_id',
                 categoryAxis: {
                     gridPosition: 'start',
-                    gridThickness: 0,
                     axisAlpha: 0,
                     gridAlpha: 0,
                     position: 'left',
@@ -577,7 +569,8 @@ export default {
         async initialize() {
             // Update the charts using the returned JSON object.
             var data = this.totals;
-            this.addGraphs(this.chartDaily, data.status_totals[0]);
+
+            this.addGraphs(this.chartDaily, data.status_totals.length > 0 ? [] : data.status_totals[0]);
             this.addGraphs(this.chartWeekly, data.weekly_totals);
             this.chartDaily.dataProvider = data.status_totals;
             this.chartDaily.validateData();
@@ -594,5 +587,8 @@ export default {
 #daily-chart {
   margin-bottom: 4rem;
   font-family: Poppins, sans-serif;
+}
+.weekly-totals-label {
+  color: #ffffff;
 }
 </style>

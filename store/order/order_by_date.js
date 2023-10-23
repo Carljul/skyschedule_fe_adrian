@@ -16,7 +16,7 @@ const getDefaultState = () => {
                 loading: false,
                 pagination: {},
                 filter: {
-                    query: '',
+                    query: new Date(),
                     page: 1,
                     limit: defaults.limit,
                     with_trashed: null,

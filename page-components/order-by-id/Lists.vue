@@ -291,6 +291,9 @@ export default {
             state: state => state.order.order_by_id.state
         }),
     },
+    mounted() {
+      this.fetchEntry();
+    },
     methods: {
         ...mapMutations('order/order_by_id', [
             'setState'

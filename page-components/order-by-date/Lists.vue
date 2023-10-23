@@ -292,11 +292,6 @@ export default {
         PageFilter,
         TSelectDynamic
     },
-    data() {
-        return {
-            dateData: ref(new Date()),
-        }
-    },
     computed: {
         ...mapState({
             state: state => state.order.order_by_date.state
