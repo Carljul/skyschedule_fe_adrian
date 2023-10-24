@@ -75,7 +75,7 @@
                               <td class="border p-2">
                                   <client-only>
                                   <t-select-dynamic
-                                  :endpoint="`/item_status`"
+                                  :fixedData="dropdownData"
                                   datakeylabel="id"
                                   datakeyvalue="id"
                                   searchplaceholder="Type to Search Status"
@@ -153,7 +153,7 @@
                               <td class="border p-2">
                                   <client-only>
                                   <t-select-dynamic
-                                  :endpoint="`/item_status`"
+                                  :fixedData="dropdownData"
                                   datakeylabel="id"
                                   datakeyvalue="id"
                                   searchplaceholder="Type to Search Status"
@@ -216,11 +216,6 @@
                                 {{ item.sold }}
                               </td>
                               <td v-if="$auth.user.role_id == 1" class="border p-2">
-                                  <!-- <nuxt-link :to="`/order?uid=${entry.order_id}`"
-                                  class="ml-2 mt-2 --text-primary --text-primary-hover" :title="appdefaults.edit" v-tooltip="appdefaults.edit">
-                                      <icon-edit />
-                                  </nuxt-link> -->
-
                                   <a href="#" @click.prevent="() => {
                                       $refs.alertconfirm.$alert({
                                           title: appdefaults.trashConfirm.title,
@@ -292,13 +287,20 @@ export default {
         PageFilter,
         TSelectDynamic
     },
+    data() {
+      return {
+          dropdownData: []
+      }
+    },
     computed: {
         ...mapState({
-            state: state => state.order.order_by_date.state
+            state: state => state.order.order_by_date.state,
+            statuses: state => state.order.order_by_date.statuses,
         }),
     },
-    mounted() {
-      this.fetchEntry()
+    async created() {
+      await this.fetchStatuses()
+      this.dropdownData = this.statuses
     },
     methods: {
         ...mapMutations('order/order_by_date', [
@@ -307,7 +309,8 @@ export default {
         ...mapActions('order/order_by_date', [
             'fetchEntry',
             'removeEntry',
-            'updateStatusEntry'
+            'updateStatusEntry',
+            'fetchStatuses'
         ]),
         async updateStatus() {
             if (this.isProcessing) {

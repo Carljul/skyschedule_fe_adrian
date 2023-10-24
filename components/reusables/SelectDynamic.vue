@@ -1,6 +1,6 @@
 <template>
      <client-only>
-        <v-select 
+        <v-select
         :components="{OpenIndicator, Deselect}"
         :value="value"
         @input="value => {
@@ -8,18 +8,18 @@
             if(!value) {
                 $emit('clear', value)
             }
-        }" 
+        }"
         :reduce="dd => dd[datakeyvalue]"
         :options="data"
         :label="datakeylabel"
-        :class="{ 
+        :class="{
             'dynamic-select-loading': loading,
             'border border-gray-300 --text-dark text-sm rounded block w-full p-1 input-focus-border tt-component-select': true
         }"
-        v-bind="$attrs" 
+        v-bind="$attrs"
         v-on="$listeners"
         :loading="loading"
-        @search="(search, loading) => { 
+        @search="(search, loading) => {
             loading(true)
             debounceEvent(function() {
                 filter.page=1;
@@ -71,6 +71,10 @@ export default {
         vSelect
     },
     props: {
+        fixedData: {
+          type: Array,
+          default: []
+        },
         endpoint: {
             type: String,
             default: '/'
@@ -113,23 +117,28 @@ export default {
     },
     methods: {
         async fetchData($args={}) {
-            try {
-                this.loading = true;
-                const res = await this.$axios.get(this.endpoint, {
-                    params: {
-                        ...this.filter,
-                        ...$args,
-                        ...this.apiargs,
-                        orderByField: this.value ? `id:${this.value}` : null
-                    }
-                });
+            this.loading = true;
+            if (this.fixedData.length > 0) {
+              this.data = this.fixedData
+              this.loading = false;
+            } else {
+                try {
+                    const res = await this.$axios.get(this.endpoint, {
+                        params: {
+                            ...this.filter,
+                            ...$args,
+                            ...this.apiargs,
+                            orderByField: this.value ? `id:${this.value}` : null
+                        }
+                    });
 
-                const uids = new Set(this.data.map(d => d.uid));
-                this.data = [...new Set([...this.data ,...res.data.data.filter(d => !uids.has(d.uid))])];
-                this.pagination = res.data.pagination;
-                this.loading = false;
-            } catch($e) {
-                this.loading = false;
+                    const uids = new Set(this.data.map(d => d.uid));
+                    this.data = [...new Set([...this.data ,...res.data.data.filter(d => !uids.has(d.uid))])];
+                    this.pagination = res.data.pagination;
+                    this.loading = false;
+                } catch($e) {
+                    this.loading = false;
+                }
             }
         }
     }

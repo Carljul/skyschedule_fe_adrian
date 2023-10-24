@@ -73,7 +73,7 @@
                               <td class="border p-2">
                                   <client-only>
                                   <t-select-dynamic
-                                  :endpoint="`/item_status`"
+                                  :fixedData="dropdownData"
                                   datakeylabel="id"
                                   datakeyvalue="id"
                                   searchplaceholder="Type to Search Status"
@@ -151,7 +151,7 @@
                               <td class="border p-2">
                                   <client-only>
                                   <t-select-dynamic
-                                  :endpoint="`/item_status`"
+                                  :fixedData="dropdownData"
                                   datakeylabel="id"
                                   datakeyvalue="id"
                                   searchplaceholder="Type to Search Status"
@@ -286,13 +286,20 @@ export default {
         Print,
         TSelectDynamic
     },
+    data() {
+      return {
+        dropdownData: []
+      }
+    },
     computed: {
         ...mapState({
-            state: state => state.order.order_by_id.state
+            state: state => state.order.order_by_id.state,
+            statuses: state => state.order.order_by_id.statuses
         }),
     },
-    mounted() {
-      this.fetchEntry();
+    async created() {
+      await this.fetchStatuses()
+      this.dropdownData = this.statuses
     },
     methods: {
         ...mapMutations('order/order_by_id', [
@@ -301,7 +308,8 @@ export default {
         ...mapActions('order/order_by_id', [
             'fetchEntry',
             'removeEntry',
-            'updateStatusEntry'
+            'updateStatusEntry',
+            'fetchStatuses'
         ]),
         async updateStatus() {
             if (this.isProcessing) {

@@ -64,7 +64,7 @@
                         </tr>
                     </thead>
 
-                    <tbody v-if="!state.entry.loading" class="bg-white divide-y divide-gray-200">
+                    <tbody v-if="!state.entry.loading && dropdownData.length > 0" class="bg-white divide-y divide-gray-200">
                         <template v-for="(entry, entryindex) in state.entry.data">
                           <tr
                             :key="`orders-${genKey(entry)}`"
@@ -73,7 +73,7 @@
                               <td class="border p-2">
                                   <client-only>
                                   <t-select-dynamic
-                                  :endpoint="`/item_status`"
+                                  :fixedData="dropdownData"
                                   datakeylabel="id"
                                   datakeyvalue="id"
                                   searchplaceholder="Type to Search Status"
@@ -151,7 +151,7 @@
                               <td class="border p-2">
                                   <client-only>
                                   <t-select-dynamic
-                                  :endpoint="`/item_status`"
+                                  :fixedData="dropdownData"
                                   datakeylabel="id"
                                   datakeyvalue="id"
                                   searchplaceholder="Type to Search Status"
@@ -238,7 +238,7 @@
 
                 </table>
 
-                <div v-if="state.entry.loading" class="flex justify-center align-center mt-10 mb-10">
+                <div v-if="state.entry.loading && dropdownData.length == 0" class="flex justify-center align-center mt-10 mb-10">
                     <div class="text-center">
                         <loader class="primary m-auto" style="display:block;" />
                         <span class="text-xs --text-dark font-semibold">Loading</span>
@@ -284,13 +284,21 @@ export default {
         Print,
         TSelectDynamic
     },
+    data() {
+      return {
+        dropdownData: []
+      }
+    },
     computed: {
         ...mapState({
-            state: state => state.order.order_by_print_type.state
+            state: state => state.order.order_by_print_type.state,
+            statuses: state => state.order.order_by_print_type.statuses
         }),
     },
     async mounted() {
       await this.fetchEntry()
+      await this.fetchStatuses()
+      this.dropdownData = this.statuses
     },
     methods: {
         ...mapMutations('order/order_by_print_type', [
@@ -299,7 +307,8 @@ export default {
         ...mapActions('order/order_by_print_type', [
             'fetchEntry',
             'removeEntry',
-            'updateStatusEntry'
+            'updateStatusEntry',
+            'fetchStatuses'
         ]),
         async updateStatus() {
             if (this.isProcessing) {

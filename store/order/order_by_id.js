@@ -24,7 +24,8 @@ const getDefaultState = () => {
                 }
             }
         },
-        print: null
+        print: null,
+        statuses: null
     }
 };
 
@@ -50,6 +51,9 @@ export const mutations = {
     },
     setToPrint(state, data) {
         state.print = data
+    },
+    setStatuses(state, data) {
+      state.statuses = data
     }
 }
 
@@ -134,7 +138,6 @@ export const actions = {
         }
     },
 
-
     async updateStatusEntry({ state, commit, dispatch }) {
         const app = this._vm;
         try {
@@ -153,7 +156,6 @@ export const actions = {
             throw $e;
         }
     },
-
 
     async removeEntry({ dispatch }, payload) {
 
@@ -219,5 +221,23 @@ export const actions = {
                 }
             });
         }
+    },
+
+    async fetchStatuses({state, commit}) {
+      if(state.state.entry.loading) { return; }
+
+      try {
+          const res = await this.$axios.get(`/item_status`);
+          console.log('Statutes',res.data.data)
+          commit('setStatuses', res.data.data);
+
+      } catch($e) {
+          commit('setState', {
+              entry: {
+                  ...state.state.entry,
+                  loading: false
+              }
+          });
+      }
     }
 };

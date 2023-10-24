@@ -1,6 +1,6 @@
 <template>
     <div class="main-order-page mb-10">
-        
+
         <div class="mb-10 mt-5">
             <breadcrumbs
             :lists="[
@@ -61,8 +61,6 @@ export default {
         await this.assignPage('Orders by Print Type')
     },
     async mounted() {
-        this.fetchEntry();
-
         if(this.$route.query.uid) {
             this.nuxtload();
             await this.fetchByUID(this.$route.query.uid);

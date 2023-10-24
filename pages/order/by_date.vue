@@ -1,6 +1,6 @@
 <template>
     <div class="main-order-page mb-10">
-        
+
         <div class="mb-10 mt-5">
             <breadcrumbs
             :lists="[
@@ -65,7 +65,7 @@ export default {
         await this.assignPage('Orders by Date')
     },
     async mounted() {
-        this.fetchEntry();
+        await this.fetchEntry();
 
         if(this.$route.query.id) {
             this.nuxtload();

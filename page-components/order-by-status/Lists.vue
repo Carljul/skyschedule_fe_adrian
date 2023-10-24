@@ -63,7 +63,7 @@
                         </tr>
                     </thead>
 
-                    <tbody v-if="!state.entry.loading" class="bg-white divide-y divide-gray-200">
+                    <tbody v-if="!state.entry.loading && dropdownData.length > 0" class="bg-white divide-y divide-gray-200">
                         <template v-for="(entry, entryindex) in state.entry.data">
                           <tr
                             :key="`orders-${genKey(entry)}`"
@@ -71,48 +71,48 @@
                           >
                               <td class="border p-2">
                                   <client-only>
-                                  <t-select-dynamic
-                                  :endpoint="`/item_status`"
-                                  datakeylabel="id"
-                                  datakeyvalue="id"
-                                  searchplaceholder="Type to Search Status"
-                                  placeholder="Choose Status"
-                                  :value="entry.line_items[0].item_status.id.toUpperCase()"
-                                  :style="`background-color:#${entry.line_items[0].item_status.color}`"
-                                  @input="e => {
-                                      setState({
-                                          inputs: {
-                                              // Line Items
-                                              line_item_id: entry.line_items[0].id,
-                                              order_id: entry.id,
-                                              product_num: entry.line_items[0].product_num,
-                                              product_detail: entry.line_items[0].product_detail,
-                                              print_type_id: entry.line_items[0].print_type_id,
-                                              num_impressions: entry.line_items[0].num_impressions,
-                                              impressions_tradition: entry.line_items[0].impressions_tradition,
-                                              impressions_hispeed: entry.line_items[0].impressions_hispeed,
-                                              impressions_digital: entry.line_items[0].impressions_digital,
-                                              quantity: entry.line_items[0].quantity,
-                                              thumbnail: entry.line_items[0].thumbnail,
-                                              item_status_id: e,
+                                    <t-select-dynamic
+                                    :fixedData="dropdownData"
+                                    datakeylabel="id"
+                                    datakeyvalue="id"
+                                    searchplaceholder="Type to Search Status"
+                                    placeholder="Choose Status"
+                                    :value="entry.line_items[0].item_status.id.toUpperCase()"
+                                    :style="`background-color:#${entry.line_items[0].item_status.color}`"
+                                    @input="e => {
+                                        setState({
+                                            inputs: {
+                                                // Line Items
+                                                line_item_id: entry.line_items[0].id,
+                                                order_id: entry.id,
+                                                product_num: entry.line_items[0].product_num,
+                                                product_detail: entry.line_items[0].product_detail,
+                                                print_type_id: entry.line_items[0].print_type_id,
+                                                num_impressions: entry.line_items[0].num_impressions,
+                                                impressions_tradition: entry.line_items[0].impressions_tradition,
+                                                impressions_hispeed: entry.line_items[0].impressions_hispeed,
+                                                impressions_digital: entry.line_items[0].impressions_digital,
+                                                quantity: entry.line_items[0].quantity,
+                                                thumbnail: entry.line_items[0].thumbnail,
+                                                item_status_id: e,
 
-                                              // Orders
-                                              ship_date_id: entry.ship_date_id,
-                                              customer_name: entry.customer_name,
-                                              proof_spec_date: entry.proof_spec_date,
-                                              printing_company: entry.printing_company,
-                                              rush: entry.rush,
-                                          },
-                                      });
-                                      updateStatus()
-                                  }"
-                                  ></t-select-dynamic>
-                                  <input type="hidden"
-                                  :value="state.inputs.id"
-                                  @input="e => {
-                                      setState({ handle: 'state.inputs', key: 'id', value: e });
-                                      validate(e);
-                                  }">
+                                                // Orders
+                                                ship_date_id: entry.ship_date_id,
+                                                customer_name: entry.customer_name,
+                                                proof_spec_date: entry.proof_spec_date,
+                                                printing_company: entry.printing_company,
+                                                rush: entry.rush,
+                                            },
+                                        });
+                                        updateStatus()
+                                    }"
+                                    ></t-select-dynamic>
+                                    <input type="hidden"
+                                    :value="state.inputs.id"
+                                    @input="e => {
+                                        setState({ handle: 'state.inputs', key: 'id', value: e });
+                                        validate(e);
+                                    }">
                                   </client-only>
                               </td>
                               <td
@@ -149,49 +149,49 @@
                           >
                               <td class="border p-2">
                                   <client-only>
-                                  <t-select-dynamic
-                                  :endpoint="`/item_status`"
-                                  datakeylabel="id"
-                                  datakeyvalue="id"
-                                  searchplaceholder="Type to Search Status"
-                                  placeholder="Choose Status"
-                                  :value="item.item_status.id.toUpperCase()"
-                                  :style="`background-color:#${item.item_status.color}`"
-                                  @input="e => {
-                                      setState({
-                                          inputs: {
-                                              // Line Items
-                                              line_item_id: item.id,
-                                              order_id: entry.id,
-                                              product_num: item.product_num,
-                                              product_detail: item.product_detail,
-                                              print_type_id: item.print_type_id,
-                                              num_impressions: item.num_impressions,
-                                              impressions_tradition: item.impressions_tradition,
-                                              impressions_hispeed: item.impressions_hispeed,
-                                              impressions_digital: item.impressions_digital,
-                                              quantity: item.quantity,
-                                              thumbnail: item.thumbnail,
-                                              item_status_id: e,
+                                    <t-select-dynamic
+                                      :fixedData="dropdownData"
+                                      datakeylabel="id"
+                                      datakeyvalue="id"
+                                      searchplaceholder="Type to Search Status"
+                                      placeholder="Choose Status"
+                                      :value="item.item_status.id.toUpperCase()"
+                                      :style="`background-color:#${item.item_status.color}`"
+                                      @input="e => {
+                                          setState({
+                                              inputs: {
+                                                  // Line Items
+                                                  line_item_id: item.id,
+                                                  order_id: entry.id,
+                                                  product_num: item.product_num,
+                                                  product_detail: item.product_detail,
+                                                  print_type_id: item.print_type_id,
+                                                  num_impressions: item.num_impressions,
+                                                  impressions_tradition: item.impressions_tradition,
+                                                  impressions_hispeed: item.impressions_hispeed,
+                                                  impressions_digital: item.impressions_digital,
+                                                  quantity: item.quantity,
+                                                  thumbnail: item.thumbnail,
+                                                  item_status_id: e,
 
-                                              // Orders
-                                              ship_date_id: entry.ship_date_id,
-                                              customer_name: entry.customer_name,
-                                              proof_spec_date: entry.proof_spec_date,
-                                              printing_company: entry.printing_company,
-                                              rush: entry.rush,
-                                          },
-                                      });
-                                      updateStatus()
+                                                  // Orders
+                                                  ship_date_id: entry.ship_date_id,
+                                                  customer_name: entry.customer_name,
+                                                  proof_spec_date: entry.proof_spec_date,
+                                                  printing_company: entry.printing_company,
+                                                  rush: entry.rush,
+                                              },
+                                          });
+                                          updateStatus()
 
-                                  }"
-                                  ></t-select-dynamic>
-                                  <input type="hidden"
-                                  :value="state.inputs.id"
-                                  @input="e => {
-                                      setState({ handle: 'state.inputs', key: 'id', value: e });
-                                      validate(e);
-                                  }">
+                                      }"
+                                    ></t-select-dynamic>
+                                    <input type="hidden"
+                                    :value="state.inputs.id"
+                                    @input="e => {
+                                        setState({ handle: 'state.inputs', key: 'id', value: e });
+                                        validate(e);
+                                    }">
                                   </client-only>
                               </td>
                               <td class="border p-2">
@@ -213,11 +213,6 @@
                                 {{ item.sold }}
                               </td>
                               <td v-if="$auth.user.role_id == 1" class="border p-2">
-                                  <!-- <nuxt-link :to="`/order?uid=${entry.order_id}`"
-                                  class="ml-2 mt-2 --text-primary --text-primary-hover" :title="appdefaults.edit" v-tooltip="appdefaults.edit">
-                                      <icon-edit />
-                                  </nuxt-link> -->
-
                                   <a href="#" @click.prevent="() => {
                                       $refs.alertconfirm.$alert({
                                           title: appdefaults.trashConfirm.title,
@@ -284,10 +279,23 @@ export default {
         PageFilter,
         TSelectDynamic
     },
+    data() {
+      return {
+        dropdownData: []
+      }
+    },
     computed: {
         ...mapState({
-            state: state => state.order.order_by_status.state
+            state: state => state.order.order_by_status.state,
+            statuses: state => state.order.order_by_status.statuses
         }),
+    },
+    async mounted() {
+      await this.fetchStatuses()
+      await this.fetchEntry();
+      this.dropdownData = this.statuses
+      console.log(['this.dropdownData', this.dropdownData])
+      console.log(['this.state', this.state])
     },
     methods: {
         ...mapMutations('order/order_by_status', [
@@ -296,7 +304,8 @@ export default {
         ...mapActions('order/order_by_status', [
             'fetchEntry',
             'removeEntry',
-            'updateStatusEntry'
+            'updateStatusEntry',
+            'fetchStatuses'
         ]),
         async updateStatus() {
             if (this.isProcessing) {

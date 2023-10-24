@@ -81,7 +81,27 @@
                                 <span class="text-white text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" :style="`background-color:#${entry.color}`">{{ entry.print_type_id }}</span>
                             </td>
                             <td class="border p-2 ">
-                                <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.max_avail }}</span>
+
+                                <!-- <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.max_avail }}</span> -->
+                                <div class="relative">
+                                  <input
+                                    type="number"
+                                    class="--text-dark text-sm block w-full h-full bg-gray-50 p-2 rounded-md"
+                                    :value="entry.max_avail"
+                                    @input="e => {
+                                      edit(entry, e.target.value, entryindex)
+                                    }"
+                                  />
+                                  <div v-if="isButtonVisible && isButtonSet == entryindex" class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                    <button @click="save()" class="text-green-500">
+                                        <i class="fas fa-check-circle"></i>
+                                    </button>
+
+                                    <button @click="cancel()" class="text-red-500 ml-2">
+                                        <i class="fas fa-times-circle"></i>
+                                    </button>
+                                  </div>
+                            </div>
                             </td>
                             <td class="border p-2 ">
                                 <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.sold }}</span>
@@ -265,6 +285,9 @@ export default {
     },
     data() {
         return {
+            isEditing: false,
+            isButtonVisible: false,
+            isButtonSet: '',
             dateData: new Date(),
             barChartData: {},
             chartDaily: null,
@@ -318,8 +341,26 @@ export default {
             'fetchEntry',
             'filterSpecificDate',
             'filterTotalStatuses',
-            'fetchStatuses'
+            'fetchStatuses',
+            'updateMaxAvailable'
         ]),
+        edit(entry, newValue, index) {
+            this.isEditing = true;
+            this.isButtonVisible = true;
+            this.isButtonSet = index;
+            // this.setState({ inputs: {...this.state.inputs, max_avail: newValue } })
+            // console.log(['this.state', this.state])
+        },
+        async save() {
+            // Add logic to save the input value (e.g., send it to the server)
+            this.isEditing = false;
+            this.isButtonVisible = false;
+            await this.updateMaxAvailable()
+        },
+        cancel() {
+            this.isEditing = false;
+            this.isButtonVisible = false;
+        },
         async paginateDaily(data) {
             var parsedDate = new Date(this.dateData)
             var formattedDate = parsedDate.getFullYear() + '-' + this.reformatSingleDigits((parsedDate.getMonth() + 1)) + '-' + this.reformatSingleDigits(parsedDate.getDate())
@@ -569,8 +610,7 @@ export default {
         async initialize() {
             // Update the charts using the returned JSON object.
             var data = this.totals;
-
-            this.addGraphs(this.chartDaily, data.status_totals.length > 0 ? [] : data.status_totals[0]);
+            this.addGraphs(this.chartDaily, data.status_totals[0]);
             this.addGraphs(this.chartWeekly, data.weekly_totals);
             this.chartDaily.dataProvider = data.status_totals;
             this.chartDaily.validateData();

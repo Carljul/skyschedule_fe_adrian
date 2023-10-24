@@ -71,7 +71,7 @@
                               <td class="border p-2">
                                   <client-only>
                                   <t-select-dynamic
-                                  :endpoint="`/item_status`"
+                                  :fixedData="dropdownData"
                                   datakeylabel="id"
                                   datakeyvalue="id"
                                   searchplaceholder="Type to Search Status"
@@ -149,7 +149,7 @@
                               <td class="border p-2">
                                   <client-only>
                                   <t-select-dynamic
-                                  :endpoint="`/item_status`"
+                                  :fixedData="dropdownData"
                                   datakeylabel="id"
                                   datakeyvalue="id"
                                   searchplaceholder="Type to Search Status"
@@ -288,16 +288,19 @@ export default {
         return {
             entries: [],
             isProcessing: false,
+            dropdownData: []
         }
     },
     computed: {
         ...mapState({
-            state: state => state.order.order.state
+            state: state => state.order.order.state,
+            statuses: state => state.order.order.statuses,
         }),
     },
-    mounted() {
+    async mounted() {
         localStorage.setItem('order-entry', JSON.stringify(this.state.entry))
-        console.log(['this.$nuxt.appIsAdmin()', this.$auth.$state.user.role_id])
+        await this.fetchStatuses()
+        this.dropdownData = this.statuses
     },
     methods: {
         ...mapMutations('order/order', [
@@ -306,7 +309,8 @@ export default {
         ...mapActions('order/order', [
             'fetchEntry',
             'removeEntry',
-            'updateStatusEntry'
+            'updateStatusEntry',
+            'fetchStatuses'
         ]),
         async updateStatus() {
             if (this.isProcessing) {
