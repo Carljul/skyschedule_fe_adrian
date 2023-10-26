@@ -85,11 +85,12 @@
                                 <!-- <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.max_avail }}</span> -->
                                 <div class="relative">
                                   <input
+                                    :ref="`inputField${entryindex}daily`"
                                     type="number"
                                     class="--text-dark text-sm block w-full h-full bg-gray-50 p-2 rounded-md"
                                     :value="entry.max_avail"
                                     @input="e => {
-                                      edit(entry, e.target.value, entryindex)
+                                        edit(entry, e.target.value, entryindex, 'daily')
                                     }"
                                   />
                                   <div v-if="isButtonVisible && isButtonSet == entryindex" class="absolute inset-y-0 right-0 flex items-center pr-3">
@@ -203,7 +204,27 @@
                                 <span class="text-white text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" :style="`background-color:#${entry.color}`">{{ entry.print_type_id }}</span>
                             </td>
                             <td class="border p-2 ">
-                                <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.max_avail }}</span>
+                                <!-- <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.max_avail }}</span> -->
+                                <div class="relative">
+                                  <input
+                                    :ref="`inputField${entryindex}weekly`"
+                                    type="number"
+                                    class="--text-dark text-sm block w-full h-full bg-gray-50 p-2 rounded-md"
+                                    :value="entry.max_avail"
+                                    @input="e => {
+                                        edit(entry, e.target.value, entryindex, 'weekly')
+                                    }"
+                                  />
+                                  <div v-if="isButtonVisible && isButtonSet == entryindex" class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                    <button @click="save()" class="text-green-500">
+                                        <i class="fas fa-check-circle"></i>
+                                    </button>
+
+                                    <button @click="cancel()" class="text-red-500 ml-2">
+                                        <i class="fas fa-times-circle"></i>
+                                    </button>
+                                  </div>
+                            </div>
                             </td>
                             <td class="border p-2 ">
                                 <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.sold }}</span>
@@ -292,7 +313,8 @@ export default {
             barChartData: {},
             chartDaily: null,
             chartWeekly: null,
-            statusColors: {}
+            statusColors: {},
+            updatedValue: {}
         };
     },
     async created() {
@@ -329,6 +351,26 @@ export default {
             this.filterSpecificDate(rightTablePayload)
             this.generateGraph()
         },
+        updatedValue: function(newdata, olddata) {
+          let newDataObject = Object.assign({}, newdata.entry)
+          if (newdata.type == 'daily') {
+            let data = this.daily.entry.data
+            newDataObject.max_avail = newdata.newValue
+            data[newdata.index] = newDataObject
+            this.setDaily({ entry: {...this.daily.entry, data: data } });
+          } else {
+            let data = this.weekly.entry.data
+            newDataObject.max_avail = newdata.newValue
+            data[newdata.index] = newDataObject
+            this.setWeekly({ entry: {...this.weekly.entry, data: data } });
+          }
+          this.setState({ inputs: {...this.state.inputs, ...newDataObject, date: this.dateData, type: newdata.type } });
+
+          this.$nextTick(() => {
+            this.$refs[`inputField${newdata.index}${newdata.type}`][0].focus()
+          });
+          console.log(['this.state', this.state])
+        }
     },
     methods: {
         ...mapMutations('main/total', [
@@ -344,12 +386,16 @@ export default {
             'fetchStatuses',
             'updateMaxAvailable'
         ]),
-        edit(entry, newValue, index) {
+        edit(entry, newValue, index, type) {
             this.isEditing = true;
             this.isButtonVisible = true;
             this.isButtonSet = index;
-            // this.setState({ inputs: {...this.state.inputs, max_avail: newValue } })
-            // console.log(['this.state', this.state])
+            this.updatedValue = {
+              index: index,
+              entry: entry,
+              newValue: newValue,
+              type: type
+            }
         },
         async save() {
             // Add logic to save the input value (e.g., send it to the server)

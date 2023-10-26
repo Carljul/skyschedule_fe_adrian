@@ -173,6 +173,8 @@ export const actions = {
                     }
                 });
 
+                console.log(['data', state.daily])
+
             } else {
                 const res = await this.$axios.get(`/totals/weekly/${payload.selectedDate}`, {
                     params: state.weekly.entry.filter
@@ -318,8 +320,8 @@ export const actions = {
       try {
           let res = null
           console.log(state.state.inputs)
-          if(state.state.inputs.line_item_id) {
-              res = await this.$axios.put(`/totals/${state.state.inputs.line_item_id}`, state.state.inputs);
+          if(state.state.inputs.production_maxes_id) {
+              res = await this.$axios.put(`/totals/${state.state.inputs.production_maxes_id}`, state.state.inputs);
 
               commit('updateEntryDataResponse', res.data.response);
               app.notify({ title: 'Saved!', html: 'Max Available has been saved.' });

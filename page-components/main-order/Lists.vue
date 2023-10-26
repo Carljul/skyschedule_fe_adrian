@@ -2,7 +2,7 @@
     <div class="index-time-sheet-lists mb-5">
         <div class="table-container bg-violet-400">
             <div class="title bg-violet-400 h-64px">
-                <h4>Listing of Orders and their Line Items by Order ID</h4>
+                <h4>Listing of Orders and their Line Items</h4>
                 <page-search />
             </div>
             <div class="content">
@@ -61,49 +61,48 @@
                         </tr>
                     </thead>
 
-
                     <tbody v-if="!state.entry.loading" class="bg-white divide-y divide-gray-200">
                         <template v-for="(entry, entryindex) in state.entry.data">
                           <tr
-                            :key="`orders-${genKey(entry)}`"
+                            :key="`orders-${genKey(entryindex)}`"
                             class="transition-all hover:bg-gray-100"
                           >
                               <td class="border p-2">
                                   <client-only>
                                   <t-select-dynamic
-                                  :fixedData="dropdownData"
+                                  :fixedData="statuses"
                                   datakeylabel="id"
                                   datakeyvalue="id"
                                   searchplaceholder="Type to Search Status"
                                   placeholder="Choose Status"
-                                  :value="entry.line_items[0].item_status.id.toUpperCase()"
-                                  :style="`background-color:#${entry.line_items[0].item_status.color}`"
+                                  :value="entry[0].item_status_id != null ? entry[0].item_status_id.toUpperCase() : ''"
+                                  :style="`background-color:#${entry[0].item_status_color}`"
                                   @input="e => {
                                       setState({
                                           inputs: {
                                               // Line Items
-                                              line_item_id: entry.line_items[0].id,
-                                              order_id: entry.id,
-                                              product_num: entry.line_items[0].product_num,
-                                              product_detail: entry.line_items[0].product_detail,
-                                              print_type_id: entry.line_items[0].print_type_id,
-                                              num_impressions: entry.line_items[0].num_impressions,
-                                              impressions_tradition: entry.line_items[0].impressions_tradition,
-                                              impressions_hispeed: entry.line_items[0].impressions_hispeed,
-                                              impressions_digital: entry.line_items[0].impressions_digital,
-                                              quantity: entry.line_items[0].quantity,
-                                              thumbnail: entry.line_items[0].thumbnail,
+                                              line_item_id: entry[0].line_item_id,
+                                              order_id: entry[0].order_id,
+                                              product_num: entry[0].product_num,
+                                              product_detail: entry[0].product_detail,
+                                              print_type_id: entry[0].print_type_id,
+                                              num_impressions: entry[0].num_impressions,
+                                              impressions_tradition: entry[0].impressions_tradition,
+                                              impressions_hispeed: entry[0].impressions_hispeed,
+                                              impressions_digital: entry[0].impressions_digital,
+                                              quantity: entry[0].quantity,
+                                              thumbnail: entry[0].thumbnail,
                                               item_status_id: e,
 
                                               // Orders
-                                              ship_date_id: entry.ship_date_id,
-                                              customer_name: entry.customer_name,
-                                              proof_spec_date: entry.proof_spec_date,
-                                              printing_company: entry.printing_company,
-                                              rush: entry.rush,
+                                              ship_date_id: entry[0].ship_date_id,
+                                              customer_name: entry[0].customer_name,
+                                              proof_spec_date: entry[0].proof_spec_date,
+                                              printing_company: entry[0].printing_company,
+                                              rush: entry[0].rush,
                                           },
                                       });
-                                      updateStatus()
+                                      updateStatusOrder()
                                   }"
                                   ></t-select-dynamic>
                                   <input type="hidden"
@@ -119,10 +118,10 @@
                                 colspan="5"
                               >
                                   <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md">
-                                    {{ entry.customer_name }}
+                                    {{ dateObserver(entry[0].ship_date_id) }} | {{ entry[0].customer_name }}
                                   </span>
                                   <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md">
-                                      {{ entry.id }} | {{ entry.customer_name }}
+                                      {{ entry[0].order_id }} | {{ entry[0].customer_name }}
                                   </span>
                               </td>
                               <td v-if="$auth.user.role_id == 1" class="border p-2">
@@ -131,7 +130,7 @@
                                           title: appdefaults.trashConfirm.title,
                                           html: appdefaults.trashConfirm.html,
                                           execute: async function() {
-                                              await removeEntry(entry);
+                                              await removeOrderEntry(entry[0]);
                                               notify({ title: 'Success!', html: `Order ${appdefaults.trashConfirm.success}` });
                                           }
                                       });
@@ -141,27 +140,26 @@
                               </td>
                           </tr>
                           <tr
-                            v-if="entry.line_items.length > 0"
-                            v-for="(item, itemIndex) in entry.line_items"
+                            v-for="(item, itemIndex) in entry"
                             :key="`items-${genKey(item)}`"
                             class="transition-all hover:bg-gray-100"
                           >
                               <td class="border p-2">
                                   <client-only>
                                   <t-select-dynamic
-                                  :fixedData="dropdownData"
+                                  :fixedData="statuses"
                                   datakeylabel="id"
                                   datakeyvalue="id"
                                   searchplaceholder="Type to Search Status"
                                   placeholder="Choose Status"
-                                  :value="item.item_status.id.toUpperCase()"
-                                  :style="`background-color:#${item.item_status.color}`"
+                                  :value="item.item_status_id != null ? item.item_status_id.toUpperCase() : ''"
+                                  :style="`background-color:#${item.item_status_color}`"
                                   @input="e => {
                                       setState({
                                           inputs: {
                                               // Line Items
-                                              line_item_id: item.id,
-                                              order_id: entry.id,
+                                              line_item_id: item.line_item_id,
+                                              order_id: item.order_id,
                                               product_num: item.product_num,
                                               product_detail: item.product_detail,
                                               print_type_id: item.print_type_id,
@@ -181,7 +179,7 @@
                                               rush: entry.rush,
                                           },
                                       });
-                                      updateStatus()
+                                      updateStatusLineItem()
 
                                   }"
                                   ></t-select-dynamic>
@@ -202,7 +200,7 @@
                               <td class="border p-2">
                                 <span
                                   class="text-white text-sm block w-full h-full bg-gray-50 p-2 rounded-md"
-                                  :style="`background-color:#${item.printtype.color}`">{{ item.printtype.long_name }}
+                                  :style="`background-color:#${item.print_types_color}`">{{ item.long_name }}
                                 </span>
                               </td>
                               <td class="border p-2">
@@ -212,17 +210,13 @@
                                 {{ item.sold }}
                               </td>
                               <td v-if="$auth.user.role_id == 1" class="border p-2">
-                                  <!-- <nuxt-link :to="`/order?uid=${entry.order_id}`"
-                                  class="ml-2 mt-2 --text-primary --text-primary-hover" :title="appdefaults.edit" v-tooltip="appdefaults.edit">
-                                      <icon-edit />
-                                  </nuxt-link> -->
 
                                   <a href="#" @click.prevent="() => {
                                       $refs.alertconfirm.$alert({
                                           title: appdefaults.trashConfirm.title,
                                           html: appdefaults.trashConfirm.html,
                                           execute: async function() {
-                                              await removeEntry(entry);
+                                              await removeLineItemEntry(item);
                                               notify({ title: 'Success!', html: `Order ${appdefaults.trashConfirm.success}` });
                                           }
                                       });
@@ -288,19 +282,18 @@ export default {
         return {
             entries: [],
             isProcessing: false,
-            dropdownData: []
         }
     },
     computed: {
         ...mapState({
-            state: state => state.order.order.state,
             statuses: state => state.order.order.statuses,
+            state: state => state.order.order.state,
         }),
     },
-    async mounted() {
+    async created() {
         localStorage.setItem('order-entry', JSON.stringify(this.state.entry))
         await this.fetchStatuses()
-        this.dropdownData = this.statuses
+        await this.fetchEntry();
     },
     methods: {
         ...mapMutations('order/order', [
@@ -308,18 +301,23 @@ export default {
         ]),
         ...mapActions('order/order', [
             'fetchEntry',
-            'removeEntry',
-            'updateStatusEntry',
+            'removeOrderEntry',
+            'removeLineItemEntry',
+            'updateStatusEntryByOrder',
+            'updateStatusEntryByLineItem',
             'fetchStatuses'
         ]),
-        async updateStatus() {
+        dateObserver(data) {
+          return data.slice(0, 4) === "9999" ? "No Date" : data;
+        },
+        async updateStatusOrder() {
             if (this.isProcessing) {
                 return;
             }
             this.isProcessing = true;
 
             try {
-                await this.updateStatusEntry();
+                await this.updateStatusEntryByOrder();
 
                 this.isProcessing = false;
 
@@ -329,11 +327,30 @@ export default {
                 this.errorHandle($e, 'adjustment');
             }
         },
-        paginate(data) {
+        async updateStatusLineItem() {
+            if (this.isProcessing) {
+                return;
+            }
+            this.isProcessing = true;
+
+            try {
+                await this.updateStatusEntryByLineItem();
+
+                this.isProcessing = false;
+
+
+            } catch($e) {
+                console.log($e)
+                this.errorHandle($e, 'adjustment');
+            }
+        },
+        async paginate(data) {
             this.setState({ entry: { ...this.state.entry, filter: { ...this.state.entry.filter, page: data.page } } });
             this.setState({ entry: { ...this.state.entry, filter: { ...this.state.entry.filter, limit: data.limit } } });
             localStorage.setItem('order-entry', JSON.stringify(this.state.entry))
-            this.fetchEntry();
+            await this.fetchEntry();
+            this.mutatedData = this.groupedData(this.state.entry.data)
+            console.log(['this.mutatedData', this.mutatedData])
         }
     }
 }

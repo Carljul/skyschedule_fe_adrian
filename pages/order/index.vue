@@ -1,6 +1,6 @@
 <template>
     <div class="main-order-page mb-10">
-        
+
         <div class="mb-10 mt-5">
             <breadcrumbs
             :lists="[
@@ -43,7 +43,8 @@ export default {
     methods: {
         ...mapActions('order/order', [
             'fetchEntry',
-            'fetchByUID'
+            'fetchByUID',
+            'fetchStatuses'
         ]),
         ...mapActions('global', [
             'assignPage',
@@ -55,7 +56,7 @@ export default {
                 this.nuxtload();
                 await this.fetchByUID(to.query.uid);
                 this.nuxtunload();
-                
+
             } else {
                 this.findPageComponent('MainOrderForm').$refs.adjustmentmodal.open=false;
             }
@@ -66,8 +67,6 @@ export default {
         await this.assignPage('Orders')
     },
     async mounted() {
-        await this.fetchEntry();
-
         if(this.$route.query.uid) {
             this.nuxtload();
             await this.fetchByUID(this.$route.query.uid);

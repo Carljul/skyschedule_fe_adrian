@@ -46,9 +46,7 @@ export const mutations = {
         state.state = {...state.state, inputs: defaultState.state.inputs};
     },
     updateEntryDataResponse(state, payload) {
-      console.log(['payload', payload])
-        const itemIndex = state.state.entry.data.findIndex(x => x && x.id == payload[0].id);
-        Vue.set(state.state.entry.data, itemIndex, payload[0]);
+        Vue.set(state.state.entry.data, payload[0].order_id, payload);
     },
     setToPrint(state, data) {
         state.print = data
@@ -56,6 +54,20 @@ export const mutations = {
     setStatuses(state, data) {
       state.statuses = data
     }
+}
+
+const groupedData = (data) => {
+  // Use reduce to group the data by order_id
+  return data.reduce((acc, item) => {
+    const orderId = item.order_id;
+    if (!acc[orderId]) {
+      // If the group does not exist, create it
+      acc[orderId] = [];
+    }
+    // Add the current item to the group
+    acc[orderId].push(item);
+    return acc;
+  }, {});
 }
 
 // actions
@@ -76,11 +88,10 @@ export const actions = {
                 params: state.state.entry.filter
             });
 
-            console.log("Orders",res.data.data)
             commit('setState', {
                 entry: {
                     ...state.state.entry,
-                    data: res.data.data,
+                    data: groupedData(res.data.data),
                     pagination: res.data.pagination,
                     loading: false
                 }
@@ -141,13 +152,12 @@ export const actions = {
         }
     },
 
-
-    async updateStatusEntry({ state, commit, dispatch }) {
+    async updateStatusEntryByOrder({ state, commit, dispatch }) {
         const app = this._vm;
         try {
             let res = null
             if(state.state.inputs.order_id) {
-                res = await this.$axios.put(`/orders/single/${state.state.inputs.order_id}`, state.state.inputs);
+                res = await this.$axios.put(`/orders/all/order/${state.state.inputs.order_id}`, state.state.inputs);
 
                 commit('updateEntryDataResponse', res.data.response);
                 app.notify({ title: 'Saved!', html: 'Status has been saved.' });
@@ -161,10 +171,37 @@ export const actions = {
         }
     },
 
-    async removeEntry({ dispatch }, payload) {
+    async updateStatusEntryByLineItem({ state, commit, dispatch }) {
         const app = this._vm;
         try {
-            await this.$axios.delete(`/orders/${payload.id}`);
+            let res = null
+            if(state.state.inputs.line_item_id) {
+                res = await this.$axios.put(`/orders/single/${state.state.inputs.line_item_id}`, state.state.inputs);
+
+                commit('updateEntryDataResponse', res.data.response);
+                app.notify({ title: 'Saved!', html: 'Status has been saved.' });
+            }
+        } catch($e) {
+            throw $e;
+        }
+    },
+
+    async removeOrderEntry({ dispatch }, payload) {
+        const app = this._vm;
+        console.log(['payload', payload])
+        try {
+            await this.$axios.delete(`/orders/delete/all/${payload.order_id}`);
+            dispatch('fetchEntry');
+        } catch($e) {
+            app.errorHandle($e);
+        }
+    },
+
+    async removeLineItemEntry({ dispatch }, payload) {
+        const app = this._vm;
+        console.log(['payload', payload])
+        try {
+            await this.$axios.delete(`/orders/delete/single/${payload.line_item_id}`);
             dispatch('fetchEntry');
         } catch($e) {
             app.errorHandle($e);
@@ -242,5 +279,5 @@ export const actions = {
               }
           });
       }
-    }
+    },
 };
