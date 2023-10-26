@@ -93,7 +93,7 @@
                                         edit(entry, e.target.value, entryindex, 'daily')
                                     }"
                                   />
-                                  <div v-if="isButtonVisible && isButtonSet == entryindex" class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                  <div v-if="isButtonVisibleOrders && isButtonSetOrders == entryindex" class="absolute inset-y-0 right-0 flex items-center pr-3">
                                     <button @click="save()" class="text-green-500">
                                         <i class="fas fa-check-circle"></i>
                                     </button>
@@ -215,7 +215,7 @@
                                         edit(entry, e.target.value, entryindex, 'weekly')
                                     }"
                                   />
-                                  <div v-if="isButtonVisible && isButtonSet == entryindex" class="absolute inset-y-0 right-0 flex items-center pr-3">
+                                  <div v-if="isButtonVisibleLines && isButtonSetLines == entryindex" class="absolute inset-y-0 right-0 flex items-center pr-3">
                                     <button @click="save()" class="text-green-500">
                                         <i class="fas fa-check-circle"></i>
                                     </button>
@@ -307,8 +307,12 @@ export default {
     data() {
         return {
             isEditing: false,
-            isButtonVisible: false,
-            isButtonSet: '',
+            isButtonVisibleOrders: false,
+            isButtonSetOrders: '',
+
+            isButtonVisibleLines: false,
+            isButtonSetLines: '',
+
             dateData: new Date(),
             barChartData: {},
             chartDaily: null,
@@ -369,7 +373,6 @@ export default {
           this.$nextTick(() => {
             this.$refs[`inputField${newdata.index}${newdata.type}`][0].focus()
           });
-          console.log(['this.state', this.state])
         }
     },
     methods: {
@@ -388,8 +391,13 @@ export default {
         ]),
         edit(entry, newValue, index, type) {
             this.isEditing = true;
-            this.isButtonVisible = true;
-            this.isButtonSet = index;
+            if (type == 'daily') {
+              this.isButtonVisibleOrders = true;
+              this.isButtonSetOrders = index;
+            } else {
+              this.isButtonVisibleLines = true;
+              this.isButtonSetLines = index;
+            }
             this.updatedValue = {
               index: index,
               entry: entry,
@@ -400,7 +408,8 @@ export default {
         async save() {
             // Add logic to save the input value (e.g., send it to the server)
             this.isEditing = false;
-            this.isButtonVisible = false;
+            this.isButtonVisibleLines = false;
+            this.isButtonVisibleOrders = false;
             await this.updateMaxAvailable()
         },
         cancel() {

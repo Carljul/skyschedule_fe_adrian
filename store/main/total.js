@@ -99,6 +99,10 @@ export const mutations = {
     },
     setStatuses(state, data) {
         state.statuses = data
+    },
+    updateEntryDataResponse(state, payload) {
+        const itemIndex = state.state.entry.data.findIndex(x => x.line_item_id === payload.line_item_id);
+        Vue.set(state.state.entry.data, itemIndex, payload);
     }
 }
 
@@ -172,8 +176,6 @@ export const actions = {
                         loading: false
                     }
                 });
-
-                console.log(['data', state.daily])
 
             } else {
                 const res = await this.$axios.get(`/totals/weekly/${payload.selectedDate}`, {
