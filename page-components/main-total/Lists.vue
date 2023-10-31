@@ -36,6 +36,7 @@
                                 <th
                                     scope="col"
                                     class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
+                                    @click="sortOrder('print_type_id')"
                                 >
                                     Print Type
                                 </th>
@@ -43,6 +44,7 @@
                                 <th
                                     scope="col"
                                     class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
+                                    @click="sortOrder('max_avail')"
                                 >
                                     Max. Avail.
                                 </th>
@@ -50,6 +52,7 @@
                                 <th
                                     scope="col"
                                     class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
+                                    @click="sortOrder('sold')"
                                 >
                                     Sold
                                 </th>
@@ -57,6 +60,7 @@
                                 <th
                                     scope="col"
                                     class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
+                                    @click="sortOrder('completed')"
                                 >
                                     Printed
                                 </th>
@@ -64,12 +68,14 @@
                                 <th
                                     scope="col"
                                     class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
+                                    @click="sortOrder('to_print')"
                                 >
                                     To Print
                                 </th>
                                 <th
                                     scope="col"
                                     class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
+                                    @click="sortOrder('unsold')"
                                 >
                                     Unsold
                                 </th>
@@ -112,10 +118,10 @@
                                 <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.completed }}</span>
                             </td>
                             <td class="border p-2 ">
-                                <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.sold - entry.completed }}</span>
+                                <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.to_print }}</span>
                             </td>
                             <td class="border p-2 ">
-                                <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.max_avail - entry.sold }}</span>
+                                <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.unsold }}</span>
                             </td>
                             </tr>
                         </tbody>
@@ -234,10 +240,10 @@
                                 <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.completed }}</span>
                             </td>
                             <td class="border p-2 ">
-                                <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.sold - entry.completed }}</span>
+                                <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.to_print }}</span>
                             </td>
                             <td class="border p-2 ">
-                                <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.max_avail - entry.sold }}</span>
+                                <span class="--text-dark text-sm block w-full h-full bg-gray-50	 p-2 rounded-md" >{{ entry.unsold }}</span>
                             </td>
                         </tr>
                     </tbody>
@@ -318,7 +324,10 @@ export default {
             chartDaily: null,
             chartWeekly: null,
             statusColors: {},
-            updatedValue: {}
+            updatedValue: {},
+            order: {
+
+            }
         };
     },
     async created() {
@@ -351,9 +360,7 @@ export default {
             }
             this.setState({ entry: { ...this.state.entry, filter: { ...this.state.entry.filter, date: formattedDate, filter: 'daily' } } });
             localStorage.setItem('total-entry', JSON.stringify(this.state.entry))
-            this.filterSpecificDate(leftTablePayload)
-            this.filterSpecificDate(rightTablePayload)
-            this.generateGraph()
+            this.filter(leftTablePayload, rightTablePayload)
         },
         updatedValue: function(newdata, olddata) {
           let newDataObject = Object.assign({}, newdata.entry)
@@ -415,6 +422,27 @@ export default {
         cancel() {
             this.isEditing = false;
             this.isButtonVisible = false;
+        },
+        sortOrder(field) {
+            var parsedDate = new Date(this.dateData)
+            var formattedDate = parsedDate.getFullYear() + '-' + this.reformatSingleDigits((parsedDate.getMonth() + 1)) + '-' + this.reformatSingleDigits(parsedDate.getDate())
+            var leftTablePayload = {
+                isDaily: true,
+                selectedDate: formattedDate
+            }
+            var rightTablePayload = {
+                isDaily: false,
+                selectedDate: formattedDate
+            }
+            this.setDaily({ entry: { ...this.daily.entry, filter: { ...this.daily.entry.filter, date: formattedDate, filter: 'daily', order: field } } });
+            this.setWeekly({ entry: { ...this.weekly.entry, filter: { ...this.daily.entry.filter, date: formattedDate, filter: 'daily', order: field } } });
+            localStorage.setItem('total-entry', JSON.stringify(this.state.entry))
+            this.filter(leftTablePayload, rightTablePayload)
+        },
+        filter(leftTablePayload, rightTablePayload) {
+            this.filterSpecificDate(leftTablePayload)
+            this.filterSpecificDate(rightTablePayload)
+            this.generateGraph()
         },
         async paginateDaily(data) {
             var parsedDate = new Date(this.dateData)
