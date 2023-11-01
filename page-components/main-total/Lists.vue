@@ -25,8 +25,7 @@
                 </div>
                 <div class="content">
                     <div class="mb-2 float-right">
-                        <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md">Reset Column Settings</button>
-                        <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md">Reset Column Order</button>
+                        <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md" @click="sortOrder('none', 'daily')">Reset Column Order</button>
                         <Print />
                     </div>
 
@@ -36,7 +35,7 @@
                                 <th
                                     scope="col"
                                     class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
-                                    @click="sortOrder('print_type_id')"
+                                    @click="sortOrder('print_type_id', 'daily')"
                                 >
                                     Print Type
                                 </th>
@@ -44,7 +43,7 @@
                                 <th
                                     scope="col"
                                     class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
-                                    @click="sortOrder('max_avail')"
+                                    @click="sortOrder('max_avail', 'daily')"
                                 >
                                     Max. Avail.
                                 </th>
@@ -52,7 +51,7 @@
                                 <th
                                     scope="col"
                                     class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
-                                    @click="sortOrder('sold')"
+                                    @click="sortOrder('sold', 'daily')"
                                 >
                                     Sold
                                 </th>
@@ -60,7 +59,7 @@
                                 <th
                                     scope="col"
                                     class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
-                                    @click="sortOrder('completed')"
+                                    @click="sortOrder('completed', 'daily')"
                                 >
                                     Printed
                                 </th>
@@ -68,14 +67,14 @@
                                 <th
                                     scope="col"
                                     class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
-                                    @click="sortOrder('to_print')"
+                                    @click="sortOrder('to_print', 'daily')"
                                 >
                                     To Print
                                 </th>
                                 <th
                                     scope="col"
                                     class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
-                                    @click="sortOrder('unsold')"
+                                    @click="sortOrder('unsold', 'daily')"
                                 >
                                     Unsold
                                 </th>
@@ -154,55 +153,60 @@
               </div>
               <div class="content">
                   <div class="mb-2 float-right">
-                        <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md">Reset Column Settings</button>
-                        <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md">Reset Column Order</button>
+                        <button class="p-2 mr-2 border-solid border-2 border-indigo-600 rounded-md" @click="sortOrder('none', 'weekly')">Reset Column Order</button>
                         <Print/>
                   </div>
 
                   <table class="w-100 table-auto">
                     <thead>
-                        <tr>
-                            <th
-                                scope="col"
-                                class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
-                            >
-                                Print Type
-                            </th>
+                            <tr>
+                                <th
+                                    scope="col"
+                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
+                                    @click="sortOrder('print_type_id', 'weekly')"
+                                >
+                                    Print Type
+                                </th>
 
-                            <th
-                                scope="col"
-                                class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
-                            >
-                                Max. Avail.
-                            </th>
+                                <th
+                                    scope="col"
+                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
+                                    @click="sortOrder('max_avail', 'weekly')"
+                                >
+                                    Max. Avail.
+                                </th>
 
-                            <th
-                                scope="col"
-                                class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
-                            >
-                                Sold
-                            </th>
+                                <th
+                                    scope="col"
+                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
+                                    @click="sortOrder('sold', 'weekly')"
+                                >
+                                    Sold
+                                </th>
 
-                            <th
-                                scope="col"
-                                class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
-                            >
-                                Printed
-                            </th>
+                                <th
+                                    scope="col"
+                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
+                                    @click="sortOrder('completed', 'weekly')"
+                                >
+                                    Printed
+                                </th>
 
-                            <th
-                                scope="col"
-                                class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
-                            >
-                                To Print
-                            </th>
-                            <th
-                                scope="col"
-                                class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
-                            >
-                                Unsold
-                            </th>
-                        </tr>
+                                <th
+                                    scope="col"
+                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
+                                    @click="sortOrder('to_print', 'weekly')"
+                                >
+                                    To Print
+                                </th>
+                                <th
+                                    scope="col"
+                                    class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
+                                    @click="sortOrder('unsold', 'weekly')"
+                                >
+                                    Unsold
+                                </th>
+                            </tr>
                     </thead>
                     <tbody v-if="!weekly.entry.loading" class="bg-white divide-y divide-gray-200">
                         <tr v-for="(entry, entryindex) in weekly.entry.data" :key="`print-type-weekly-entry-${genKey(entry)}`" class="transition-all hover:bg-gray-100">
@@ -325,9 +329,18 @@ export default {
             chartWeekly: null,
             statusColors: {},
             updatedValue: {},
-            order: {
-
-            }
+            dailyPrintTypeOrder: 'asc',
+            dailyMaxAvailOrder: 'asc',
+            dailySoldOrder: 'asc',
+            dailyCompletedOrder: 'asc',
+            dailyToPrintOrder: 'asc',
+            dailyUnsoldOrder: 'asc',
+            weeklyPrintTypeOrder: 'asc',
+            weeklyMaxAvailOrder: 'asc',
+            weeklySoldOrder: 'asc',
+            weeklyCompletedOrder: 'asc',
+            weeklyToPrintOrder: 'asc',
+            weeklyUnsoldOrder: 'asc'
         };
     },
     async created() {
@@ -423,7 +436,7 @@ export default {
             this.isEditing = false;
             this.isButtonVisible = false;
         },
-        sortOrder(field) {
+        sortOrder(field, type) {
             var parsedDate = new Date(this.dateData)
             var formattedDate = parsedDate.getFullYear() + '-' + this.reformatSingleDigits((parsedDate.getMonth() + 1)) + '-' + this.reformatSingleDigits(parsedDate.getDate())
             var leftTablePayload = {
@@ -434,8 +447,18 @@ export default {
                 isDaily: false,
                 selectedDate: formattedDate
             }
-            this.setDaily({ entry: { ...this.daily.entry, filter: { ...this.daily.entry.filter, date: formattedDate, filter: 'daily', order: field } } });
-            this.setWeekly({ entry: { ...this.weekly.entry, filter: { ...this.daily.entry.filter, date: formattedDate, filter: 'daily', order: field } } });
+            let order = ''
+            if (field != 'none') {
+                order = this.decideOrder(field, type)
+            } else {
+                field = '';
+            }
+            if (type == 'daily') {
+                this.setDaily({ entry: { ...this.daily.entry, filter: { ...this.daily.entry.filter, date: formattedDate, filter: 'daily', field: field, order: order } } });
+            } else if (type == 'weekly') {
+                this.setWeekly({ entry: { ...this.weekly.entry, filter: { ...this.daily.entry.filter, date: formattedDate, filter: 'daily', field: field, order: order } } });
+            }
+            
             localStorage.setItem('total-entry', JSON.stringify(this.state.entry))
             this.filter(leftTablePayload, rightTablePayload)
         },
@@ -443,6 +466,107 @@ export default {
             this.filterSpecificDate(leftTablePayload)
             this.filterSpecificDate(rightTablePayload)
             this.generateGraph()
+        },
+        decideOrder(field, type) {
+            if (field == 'print_type_id' && type == 'daily') {
+                if (this.dailyPrintTypeOrder == 'asc') {
+                    this.dailyPrintTypeOrder = 'desc'
+                    return this.dailyPrintTypeOrder
+                }
+
+                this.dailyPrintTypeOrder = 'asc'
+                return this.dailyPrintTypeOrder
+            } else if (field == 'max_avail' && type == 'daily') {
+                if (this.dailyMaxAvailOrder == 'asc') {
+                    this.dailyMaxAvailOrder = 'desc'
+                    return this.dailyMaxAvailOrder
+                }
+
+                this.dailyMaxAvailOrder = 'asc'
+                return this.dailyMaxAvailOrder
+            } else if (field == 'sold' && type == 'daily') {
+                if (this.dailySoldOrder == 'asc') {
+                    this.dailySoldOrder = 'desc'
+                    return this.dailySoldOrder
+                }
+
+                this.dailySoldOrder = 'asc'
+                return this.dailySoldOrder
+            } else if (field == 'to_print' && type == 'daily') {
+                if (this.dailyToPrintOrder == 'asc') {
+                    this.dailyToPrintOrder = 'desc'
+                    return this.dailyToPrintOrder
+                }
+
+                this.dailyToPrintOrder = 'asc'
+                return this.dailyToPrintOrder
+            } else if (field == 'unsold' && type == 'daily') {
+                if (this.dailyUnsoldOrder == 'asc') {
+                    this.dailyUnsoldOrder = 'desc'
+                    return this.dailyUnsoldOrder
+                }
+
+                this.dailyUnsoldOrder = 'asc'
+                return this.dailyUnsoldOrder
+            } else if (field == 'completed' && type == 'daily') {
+                if (this.dailyCompletedOrder == 'asc') {
+                    this.dailyCompletedOrder = 'desc'
+                    return this.dailyCompletedOrder
+                }
+
+                this.dailyCompletedOrder = 'asc'
+                return this.dailyCompletedOrder
+            }
+            // Weekly
+            if (field == 'print_type_id' && type == 'weekly') {
+                if (this.weeklyPrintTypeOrder == 'asc') {
+                    this.weeklyPrintTypeOrder = 'desc'
+                    return this.weeklyPrintTypeOrder
+                }
+
+                this.weeklyPrintTypeOrder = 'asc'
+                return this.weeklyPrintTypeOrder
+            } else if (field == 'max_avail' && type == 'weekly') {
+                if (this.weeklyMaxAvailOrder == 'asc') {
+                    this.weeklyMaxAvailOrder = 'desc'
+                    return this.weeklyMaxAvailOrder
+                }
+
+                this.weeklyMaxAvailOrder = 'asc'
+                return this.weeklyMaxAvailOrder
+            } else if (field == 'sold' && type == 'weekly') {
+                if (this.weeklySoldOrder == 'asc') {
+                    this.weeklySoldOrder = 'desc'
+                    return this.weeklySoldOrder
+                }
+
+                this.weeklySoldOrder = 'asc'
+                return this.weeklySoldOrder
+            } else if (field == 'to_print' && type == 'weekly') {
+                if (this.weeklyToPrintOrder == 'asc') {
+                    this.weeklyToPrintOrder = 'desc'
+                    return this.weeklyToPrintOrder
+                }
+
+                this.weeklyToPrintOrder = 'asc'
+                return this.weeklyToPrintOrder
+            } else if (field == 'unsold' && type == 'weekly') {
+                if (this.weeklyUnsoldOrder == 'asc') {
+                    this.weeklyUnsoldOrder = 'desc'
+                    return this.weeklyUnsoldOrder
+                }
+
+                this.weeklyUnsoldOrder = 'asc'
+                return this.weeklyUnsoldOrder
+            } else if (field == 'completed' && type == 'weekly') {
+                if (this.weeklyCompletedOrder == 'asc') {
+                    this.weeklyCompletedOrder = 'desc'
+                    return this.weeklyCompletedOrder
+                }
+
+                this.weeklyCompletedOrder = 'asc'
+                return this.weeklyCompletedOrder
+            }
         },
         async paginateDaily(data) {
             var parsedDate = new Date(this.dateData)
@@ -713,5 +837,8 @@ export default {
 }
 .weekly-totals-label {
   color: #ffffff;
+}
+table th {
+    cursor: pointer;
 }
 </style>

@@ -18,6 +18,7 @@
                             <th
                                 scope="col"
                                 class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
+                                @click="sortOrder('item_status_id')"
                             >
                                 Status
                             </th>
@@ -25,6 +26,7 @@
                             <th
                                 scope="col"
                                 class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
+                                @click="sortOrder('product_num')"
                             >
                                 Product
                             </th>
@@ -32,6 +34,7 @@
                             <th
                                 scope="col"
                                 class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
+                                @click="sortOrder('product_detail')"
                             >
                                 Detail
                             </th>
@@ -39,6 +42,7 @@
                             <th
                                 scope="col"
                                 class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
+                                @click="sortOrder('long_name')"
                             >
                                 Print Type
                             </th>
@@ -46,12 +50,14 @@
                             <th
                                 scope="col"
                                 class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
+                                @click="sortOrder('quantity')"
                             >
                                 Quantity
                             </th>
                             <th
                                 scope="col"
                                 class="px-6 py-3 text-xs font-medium tracking-wider text-left uppercase"
+                                @click="sortOrder('sold')"
                             >
                                 Total
                             </th>
@@ -281,6 +287,16 @@ export default {
         Print,
         TSelectDynamic
     },
+    data() {
+        return {
+            itemStatusOrder: 'asc',
+            product_num: 'asc',
+            product_detail: 'asc',
+            long_name: 'asc',
+            quantity: 'asc',
+            sold: 'asc'
+        }
+    },
     computed: {
         ...mapState({
             statuses: state => state.order.order_by_id.statuses,
@@ -339,6 +355,62 @@ export default {
                 this.errorHandle($e, 'adjustment');
             }
         },
+        async sortOrder(field) {
+            let order = '';
+            if (field == 'item_status_id') {
+                if (this.itemStatusOrder == 'asc') {
+                    this.itemStatusOrder = 'desc';
+                    order = this.itemStatusOrder
+                } else {
+                    this.itemStatusOrder = 'asc';
+                    order = this.itemStatusOrder
+                }
+            } else if (field == 'product_num') {
+                if (this.product_num == 'asc') {
+                    this.product_num = 'desc';
+                    order = this.product_num
+                } else {
+                    this.product_num = 'asc';
+                    order = this.product_num
+                }
+            } else if (field == 'product_detail') {
+                if (this.product_detail == 'asc') {
+                    this.product_detail = 'desc';
+                    order = this.product_detail
+                } else {
+                    this.product_detail = 'asc';
+                    order = this.product_detail
+                }
+            } else if (field == 'long_name') {
+                if (this.long_name == 'asc') {
+                    this.long_name = 'desc';
+                    order = this.long_name
+                } else {
+                    this.long_name = 'asc';
+                    order = this.long_name
+                }
+            } else if (field == 'quantity') {
+                if (this.quantity == 'asc') {
+                    this.quantity = 'desc';
+                    order = this.quantity
+                } else {
+                    this.quantity = 'asc';
+                    order = this.quantity
+                }
+            } else if (field == 'sold') {
+                if (this.sold == 'asc') {
+                    this.sold = 'desc';
+                    order = this.sold
+                } else {
+                    this.sold = 'asc';
+                    order = this.sold
+                }
+            } 
+            
+            this.setState({ entry: { ...this.state.entry, filter: { ...this.state.entry.filter, field: field, order: order } } });
+            localStorage.setItem('order-entry', JSON.stringify(this.state.entry))
+            await this.fetchEntry();
+        },
         paginate(data) {
             this.setState({ entry: { ...this.state.entry, filter: { ...this.state.entry.filter, page: data.page } } });
             this.setState({ entry: { ...this.state.entry, filter: { ...this.state.entry.filter, limit: data.limit } } });
@@ -347,3 +419,9 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+table th {
+    cursor: pointer;
+}
+</style>
